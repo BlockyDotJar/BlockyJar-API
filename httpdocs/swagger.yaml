@@ -1,0 +1,54 @@
+openapi: 3.0.3
+info:
+  title: BlockyJar API
+  version: 1.0.0
+  description: API Endpoints for some parts of the <a href="https://blockyjar.dev">blockyjar.dev</a> website.
+  contact:
+    name: Dominic R.
+    url: https://twitch.tv/BlockyDotJar
+    email: mail@blockyjar.dev
+  license:
+    name: GPL-3.0
+    url: https://www.gnu.org/licenses/gpl-3.0.en.html
+servers:
+  - url: https://api.blockyjar.dev/v1/
+tags:
+  - name: base
+    description: The base of the API.
+paths:
+  /:
+    get:
+      tags:
+        - base
+      summary: Get information about the current API version!
+      description: Get some information about the current version of this API.
+      responses:
+        '200':
+           description: Successful operation.
+           content:
+             application/json:
+               schema:
+                 $ref: '#/components/schemas/Version'
+        '500':
+          description: Internal server error.
+components:
+  schemas:
+    Version:
+      type: object
+      properties:
+        status:
+          type: integer
+          format: int32
+          example: 200
+        message:
+          type: string
+          example: Hello World!
+        version:
+          type: string
+          example: v1
+        base_url:
+          type: string
+          example: https://api.blockyjar.dev/v1
+        docs_url:
+          type: string
+          example: https://api.blockyjar.dev/v1/docs/

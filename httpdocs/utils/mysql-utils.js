@@ -41,7 +41,7 @@ async function getAllAdmins(res, connection) {
     return rows;
 }
 
-async function isAdmin (res, connection, userID) {
+async function isAdmin(res, connection, userID) {
     const rows = await getAllAdmins(res, connection);
     const isAdmin = rows.some(row => row.userID === userID);
 
@@ -54,7 +54,7 @@ async function isAdmin (res, connection, userID) {
 
 module.exports = {
     createDatabaseConnection: createDatabaseConnection,
-    requestDatabase, requestDatabase,
+    requestDatabase: requestDatabase,
     getAllAdmins: getAllAdmins,
     isAdmin: isAdmin
 }

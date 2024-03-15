@@ -1,7 +1,7 @@
 const { getAPI, getAdmin, getAdmins, postAdmin, deleteAdmin, patchAdmin } = require("../utils/twitch-utils");
 
 module.exports.setup = (app) => {
-    app.route("/v1/admins")
+	app.route("/v1/admins")
 		.get((req, res) => {
 			const api = getAPI(req, res);
 
@@ -40,9 +40,9 @@ module.exports.setup = (app) => {
 
 			if (isNaN(adminID)) {
 				res.status(400).jsonp({
-                    "status": 400,
-                    "message": "Invalid 'admin_id' parameter specified. The specified value isn't a valid integer."
-                });
+					"status": 400,
+					"message": "Invalid 'admin_id' parameter specified. The specified value isn't a valid integer."
+				});
 
 				return;
 			}
@@ -56,9 +56,9 @@ module.exports.setup = (app) => {
 
 			if (isNaN(adminID)) {
 				res.status(400).jsonp({
-                    "status": 400,
-                    "message": "Invalid 'admin_id' parameter specified. The specified value isn't a valid integer."
-                });
+					"status": 400,
+					"message": "Invalid 'admin_id' parameter specified. The specified value isn't a valid integer."
+				});
 
 				return;
 			}
@@ -72,9 +72,9 @@ module.exports.setup = (app) => {
 
 			if (isNaN(adminID)) {
 				res.status(400).jsonp({
-                    "status": 400,
-                    "message": "Invalid 'admin_id' parameter specified. The specified value isn't a valid integer."
-                });
+					"status": 400,
+					"message": "Invalid 'admin_id' parameter specified. The specified value isn't a valid integer."
+				});
 
 				return;
 			}

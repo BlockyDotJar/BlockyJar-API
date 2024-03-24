@@ -33,8 +33,8 @@ const requestDatabase = (connection, query, values, res) => {
  */
 
 async function getAllAdmins(res, connection) {
-    const query = "SELECT * FROM `admins` WHERE `isOwner` = ?";
-    const values = [false];
+    const query = "SELECT * FROM `admins`";
+    const values = [];
 
     const [results] = await requestDatabase(connection, query, values, res);
     const rows = results[0];

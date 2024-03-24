@@ -87,9 +87,9 @@ async function getAdminsResponse(res, connection, userID) {
         return;
     }
 
-    const isAdmin = rows.some(row => row.userID === userID);
+    const hasAdminPerms = isAdmin(res, connection, userID);
 
-    if (!isAdmin) {
+    if (!hasAdminPerms) {
          res.status(403).jsonp({
             "status": 403,
             "message": "You are not an admin of ApuJar."

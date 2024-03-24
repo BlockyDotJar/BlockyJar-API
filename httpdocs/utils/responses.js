@@ -1,5 +1,5 @@
-const { createDatabaseConnection, requestDatabase, getAllAdmins, isAdmin, getAllOwners, isOwner } = require("../utils/mysql-utils");
-const { getUsers } = require("../utils/twitch-utils");
+const { createDatabaseConnection, requestDatabase, getAllAdmins, isAdmin, getAllOwners, isOwner } = require("./mysql");
+const { getUsers } = require("./twitch");
 
 /*
  * GET /v1/admins/:admin_id

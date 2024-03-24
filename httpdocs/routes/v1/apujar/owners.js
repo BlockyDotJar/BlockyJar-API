@@ -1,8 +1,8 @@
-const { getAPI } = require("../utils/twitch-utils");
-const { getOwner, getOwners, postOwner, deleteOwner, patchOwner } = require("../utils/express-utils");
+const { getAPI } = require("../../../utils/twitch");
+const { getOwner, getOwners, postOwner, deleteOwner, patchOwner } = require("../../../utils/responses");
 
 module.exports.setup = (app) => {
-	app.route("/v1/owners")
+	app.route("/v1/apujar/owners")
 		.get((req, res) => {
 			const api = getAPI(req, res);
 
@@ -35,7 +35,7 @@ module.exports.setup = (app) => {
 			postOwner(res, api, id, login);
 		});
 
-	app.route("/v1/owners/:owner_id")
+	app.route("/v1/apujar/owners/:owner_id")
 		.get((req, res) => {
 			const ownerID = Number(req.params.owner_id);
 

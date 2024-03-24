@@ -1,8 +1,8 @@
-const { getAPI } = require("../utils/twitch-utils");
-const { getAdmin, getAdmins, postAdmin, deleteAdmin, patchAdmin } = require("../utils/express-utils");
+const { getAPI } = require("../../../utils/twitch");
+const { getAdmin, getAdmins, postAdmin, deleteAdmin, patchAdmin } = require("../../../utils/responses");
 
 module.exports.setup = (app) => {
-	app.route("/v1/admins")
+	app.route("/v1/apujar/admins")
 		.get((req, res) => {
 			const api = getAPI(req, res);
 
@@ -35,7 +35,7 @@ module.exports.setup = (app) => {
 			postAdmin(res, api, id, login);
 		});
 
-	app.route("/v1/admins/:admin_id")
+	app.route("/v1/apujar/admins/:admin_id")
 		.get((req, res) => {
 			const adminID = Number(req.params.admin_id);
 

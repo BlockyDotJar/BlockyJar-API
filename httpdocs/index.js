@@ -14,8 +14,8 @@ const file  = fs.readFileSync("./httpdocs/swagger.yaml", "UTF8");
 const swaggerDocument = yaml.parse(file);
 
 const version = require("./routes/version");
-const admins = require("./routes/admins");
-const owners = require("./routes/owners");
+const admins = require("./routes/v1/apujar/admins");
+const owners = require("./routes/v1/apujar/owners");
 
 app.use(express.json());
 app.use(cors());

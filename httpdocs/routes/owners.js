@@ -1,12 +1,12 @@
 const { getAPI } = require("../utils/twitch-utils");
-const { getAdmin, getAdmins, postAdmin, deleteAdmin, patchAdmin } = require("../utils/express-utils");
+const { getOwner, getOwners, postOwner, deleteOwner, patchOwner } = require("../utils/express-utils");
 
 module.exports.setup = (app) => {
-	app.route("/v1/admins")
+	app.route("/v1/owners")
 		.get((req, res) => {
 			const api = getAPI(req, res);
 
-			getAdmins(res, api);
+			getOwners(res, api);
 		})
 		.post((req, res) => {
 			const id = Number(req.body.id);
@@ -32,17 +32,17 @@ module.exports.setup = (app) => {
 
 			const api = getAPI(req, res);
 
-			postAdmin(res, api, id, login);
+			postOwner(res, api, id, login);
 		});
 
-	app.route("/v1/admins/:admin_id")
+	app.route("/v1/owners/:owner_id")
 		.get((req, res) => {
-			const adminID = Number(req.params.admin_id);
+			const ownerID = Number(req.params.owner_id);
 
-			if (isNaN(adminID)) {
+			if (isNaN(ownerID)) {
 				res.status(400).jsonp({
 					"status": 400,
-					"message": "Invalid 'admin_id' parameter specified. The specified value isn't a valid integer."
+					"message": "Invalid 'owner_id' parameter specified. The specified value isn't a valid integer."
 				});
 
 				return;
@@ -50,15 +50,15 @@ module.exports.setup = (app) => {
 
 			const api = getAPI(req, res);
 
-			getAdmin(res, api, adminID);
+			getOwner(res, api, ownerID);
 		})
 		.delete((req, res) => {
-			const adminID = Number(req.params.admin_id);
+			const ownerID = Number(req.params.owner_id);
 
-			if (isNaN(adminID)) {
+			if (isNaN(ownerID)) {
 				res.status(400).jsonp({
 					"status": 400,
-					"message": "Invalid 'admin_id' parameter specified. The specified value isn't a valid integer."
+					"message": "Invalid 'owner_id' parameter specified. The specified value isn't a valid integer."
 				});
 
 				return;
@@ -66,15 +66,15 @@ module.exports.setup = (app) => {
 
 			const api = getAPI(req, res);
 
-			deleteAdmin(res, api, adminID);
+			deleteOwner(res, api, ownerID);
 		})
 		.patch((req, res) => {
-			const adminID = Number(req.params.admin_id);
+			const ownerID = Number(req.params.owner_id);
 
-			if (isNaN(adminID)) {
+			if (isNaN(ownerID)) {
 				res.status(400).jsonp({
 					"status": 400,
-					"message": "Invalid 'admin_id' parameter specified. The specified value isn't a valid integer."
+					"message": "Invalid 'owner_id' parameter specified. The specified value isn't a valid integer."
 				});
 
 				return;
@@ -93,6 +93,6 @@ module.exports.setup = (app) => {
 
 			const api = getAPI(req, res);
 
-			patchAdmin(res, api, adminID, login);
+			patchOwner(res, api, ownerID, login);
 		});
 };

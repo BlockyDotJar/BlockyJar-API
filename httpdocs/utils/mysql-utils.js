@@ -33,9 +33,10 @@ const requestDatabase = (connection, query, values, res) => {
  */
 
 async function getAllAdmins(res, connection) {
-    const query = "SELECT * FROM `admins`";
+    const query = "SELECT * FROM `admins` WHERE `isOwner` = ?";
+    const values = [false];
 
-    const [results] = await requestDatabase(connection, query, [], res);
+    const [results] = await requestDatabase(connection, query, values, res);
     const rows = results[0];
 
     return rows;
@@ -48,6 +49,23 @@ async function isAdmin(res, connection, userID) {
     return isAdmin;
 }
 
+async function getAllOwners(res, connection) {
+    const query = "SELECT * FROM `admins` WHERE `isOwner` = ?";
+    const values = [true];
+
+    const [results] = await requestDatabase(connection, query, values, res);
+    const rows = results[0];
+
+    return rows;
+}
+
+async function isOwner(res, connection, userID) {
+    const rows = await getAllOwners(res, connection);
+    const isOwner = rows.some(row => row.userID === userID);
+
+    return isOwner;
+}
+
 /*
  * Export modules
  */
@@ -56,5 +74,7 @@ module.exports = {
     createDatabaseConnection: createDatabaseConnection,
     requestDatabase: requestDatabase,
     getAllAdmins: getAllAdmins,
-    isAdmin: isAdmin
+    isAdmin: isAdmin,
+    getAllOwners: getAllOwners,
+    isOwner: isOwner
 }

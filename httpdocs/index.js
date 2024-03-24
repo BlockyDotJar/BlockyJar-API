@@ -1,4 +1,7 @@
+/* eslint-disable no-unexpected-multiline */
+
 const swaggerUi = require("swagger-ui-express");
+
 const express = require("express");
 const app = express();
 
@@ -12,18 +15,20 @@ const swaggerDocument = yaml.parse(file);
 
 const v1 = require("./routes/v1");
 const admins = require("./routes/admins");
+const owners = require("./routes/admins");
 
 app.use(express.json());
 app.use(cors());
 
 v1.setup(app);
 admins.setup(app);
+owners.setup(app);
 
 app.use
 (
-  "/v1/docs/",
-  swaggerUi.serve,
-  swaggerUi.setup(swaggerDocument)
+    "/v1/docs/", 
+    swaggerUi.serve, 
+    swaggerUi.setup(swaggerDocument)
 );
 
 const port = process.env.PORT || 3000;

@@ -10,5 +10,8 @@
   },
   "scripts": {
     "api": "node httpdocs/index.js"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.0"
   }
 }

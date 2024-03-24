@@ -15,7 +15,7 @@ const swaggerDocument = yaml.parse(file);
 
 const version = require("./routes/version");
 const admins = require("./routes/admins");
-const owners = require("./routes/admins");
+const owners = require("./routes/owners");
 
 app.use(express.json());
 app.use(cors());

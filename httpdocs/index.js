@@ -13,14 +13,14 @@ const yaml = require("yaml");
 const file  = fs.readFileSync("./httpdocs/swagger.yaml", "UTF8");
 const swaggerDocument = yaml.parse(file);
 
-const v1 = require("./routes/v1");
+const version = require("./routes/version");
 const admins = require("./routes/admins");
 const owners = require("./routes/admins");
 
 app.use(express.json());
 app.use(cors());
 
-v1.setup(app);
+version.setup(app);
 admins.setup(app);
 owners.setup(app);
 

@@ -29,8 +29,8 @@ module.exports.setup = (app) => {
 				);
 			}
 
-			const id = Number(req.body.id);
-			const login = req.body.login;
+			const id = Number(req.body.user_id);
+			const login = req.body.user_login;
 
 			const api = getAPI(req, res);
 

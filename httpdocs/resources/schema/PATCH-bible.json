@@ -3,5 +3,5 @@
     "properties": {
       "entry": { "type": "string" }
     },
-    "required": [ "user_id", "entry" ]
+    "required": [ "entry" ]
 }

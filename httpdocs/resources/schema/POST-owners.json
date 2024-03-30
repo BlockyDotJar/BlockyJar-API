@@ -1,8 +1,8 @@
 {
     "type": "object",
     "properties": {
-      "id": { "type": "number" },
-      "login": { "type": "string" }
+      "user_id": { "type": "number" },
+      "user_login": { "type": "string" }
     },
-    "required": [ "id", "login" ]
+    "required": [ "user_id", "user_login" ]
 }

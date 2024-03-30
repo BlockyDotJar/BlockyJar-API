@@ -115,10 +115,10 @@ module.exports.setup = (app) => {
 			const biblePage = Number(req.params.bible_page);
 
 			const validator = new Validator();
-			const validationResult = validator.validate(req.body, patchSchema);
+			const valResult = validator.validate(req.body, patchSchema);
 	
-			if (!validationResult.valid) {
-				const errors = validationResult.errors.map(error => `${error.property} ${error.message}.`);
+			if (!valResult.valid) {
+				const errors = valResult.errors.map(error => `${error.property} ${error.message}.`);
 	
 				return res.status(400).jsonp
 				(

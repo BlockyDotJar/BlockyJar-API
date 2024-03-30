@@ -11,6 +11,7 @@ const yaml = require("yaml");
 const version = require("./routes/version");
 const regex = require("./routes/v1/regex");
 const flags = require("./routes/v1/flags");
+const user = require("./routes/v1/apujar/internal/user");
 const admins = require("./routes/v1/apujar/admins");
 const owners = require("./routes/v1/apujar/owners");
 const bible = require("./routes/v1/apujar/bible");
@@ -32,6 +33,7 @@ app.use((err, _req, res, _next) => {
 version.setup(app);
 regex.setup(app);
 flags.setup(app);
+user.setup(app);
 admins.setup(app);
 owners.setup(app);
 bible.setup(app);

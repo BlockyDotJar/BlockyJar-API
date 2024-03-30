@@ -13,12 +13,13 @@ const getAPI = (req, res) => {
     const clientId = req.get("Client-Id");
 
     if (!token || !clientId) {
-        res.status(401).jsonp({
-            "status": 401,
-            "message": "Authorization and Client-Id headers must be specified."
-        });
-
-        return;
+        return res.status(401).jsonp
+        (
+            {
+                "status": 401,
+                "message": "Authorization and Client-Id headers must be specified."
+            }
+        );
     }
 
     const authParts = token.startsWith("Bearer") ? token.split(" ") : null;
@@ -29,14 +30,53 @@ const getAPI = (req, res) => {
 
 const getUsers = (res, api) => {
     return api.get("users")
-        .then(response => ({ response }) )
+        .then(response => {
+            const data = response.data;
+            const user = data[0];
+            const userID = Number(user.id);
+            const userLogin = user.login;
+
+            return { 
+                        "userID": userID,
+                        "userLogin": userLogin
+                   };
+        })
         .catch(err => {
             const errorMessage = err.message;
 
-            res.status(400).jsonp({
-                "status": 400,
-                "message": errorMessage
-            });
+            return res.status(400).jsonp
+            (
+                {
+                    "status": 400,
+                    "message": errorMessage
+                }
+            );
+        });
+}
+
+const getUsersByID = (res, api, userID) => {
+    return api.get(`users?id=${userID}`)
+        .then(response => {
+            const data = response.data;
+            const user = data[0];
+            const userID = Number(user.id);
+            const userLogin = user.login;
+
+            return { 
+                        "userID": userID,
+                        "userLogin": userLogin
+                   };
+        })
+        .catch(err => {
+            const errorMessage = err.message;
+
+            return res.status(400).jsonp
+            (
+                {
+                    "status": 400,
+                    "message": errorMessage
+                }
+            );
         });
 }
 
@@ -46,5 +86,6 @@ const getUsers = (res, api) => {
 
 module.exports = {
     getAPI: getAPI,
-    getUsers: getUsers
+    getUsers: getUsers,
+    getUsersByID: getUsersByID
 };

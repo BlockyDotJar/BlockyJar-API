@@ -21,10 +21,13 @@ const requestDatabase = (connection, query, values, res) => {
         .catch(err => {
             const errorMessage = err.message;
 
-            res.status(502).jsonp({
-                "status": 502,
-                "message": errorMessage
-            });
+            return res.status(422).jsonp
+            (
+                {
+                    "status": 422,
+                    "message": errorMessage
+                }
+            );
         });
 }
 
@@ -32,19 +35,24 @@ const requestDatabase = (connection, query, values, res) => {
  * Response related database utility functions
  */
 
-async function getAllAdmins(res, connection) {
-    const query = "SELECT * FROM `admins`";
-    const values = [];
+async function getAllAdmins(res, connection, withoutOwnerPerms) {
+    let query = "SELECT * FROM `admins`";
+    let values = [];
+
+    if (withoutOwnerPerms) {
+        query += " WHERE `isOwner` = ?"
+        values = [false];
+    }
 
     const [results] = await requestDatabase(connection, query, values, res);
-    const rows = results[0];
+    const admins = results[0];
 
-    return rows;
+    return admins;
 }
 
 async function isAdmin(res, connection, userID) {
-    const rows = await getAllAdmins(res, connection);
-    const isAdmin = rows.some(row => row.userID === userID);
+    const admins = await getAllAdmins(res, connection);
+    const isAdmin = admins.some(admin => admin.userID === userID);
 
     return isAdmin;
 }
@@ -54,16 +62,26 @@ async function getAllOwners(res, connection) {
     const values = [true];
 
     const [results] = await requestDatabase(connection, query, values, res);
-    const rows = results[0];
+    const owners = results[0];
 
-    return rows;
+    return owners;
 }
 
 async function isOwner(res, connection, userID) {
-    const rows = await getAllOwners(res, connection);
-    const isOwner = rows.some(row => row.userID === userID);
+    const owners = await getAllOwners(res, connection);
+    const isOwner = owners.some(owner => owner.userID === userID);
 
     return isOwner;
+}
+
+async function getAllBibleEntries(res, connection) {
+    const query = "SELECT * FROM `bible`";
+    const values = [];
+
+    const [results] = await requestDatabase(connection, query, values, res);
+    const bibleEntries = results[0];
+
+    return bibleEntries;
 }
 
 /*
@@ -76,5 +94,6 @@ module.exports = {
     getAllAdmins: getAllAdmins,
     isAdmin: isAdmin,
     getAllOwners: getAllOwners,
-    isOwner: isOwner
+    isOwner: isOwner,
+    getAllBibleEntries: getAllBibleEntries
 }

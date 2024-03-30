@@ -9,6 +9,7 @@
         "ecmaVersion": "latest"
     },
     "rules": {
-        "function-paren-newline": ["off", "multiline"]
+        "function-paren-newline": [ "off", "multiline" ],
+        "no-unexpected-multiline": [ "off" ]
     }
 }

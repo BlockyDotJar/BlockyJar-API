@@ -1,98 +1,79 @@
 const { getAPI } = require("../../../utils/twitch");
-const { getOwner, getOwners, postOwner, deleteOwner, patchOwner } = require("../../../utils/responses");
+const { param, validationResult } = require("express-validator");
+const { Validator } = require("jsonschema");
+
+const responses = require("../../../utils/responses/owners");
+
+const schema = require("../../../resources/schema/POST-owners.json");
 
 module.exports.setup = (app) => {
 	app.route("/v1/apujar/owners")
 		.get((req, res) => {
 			const api = getAPI(req, res);
 
-			getOwners(res, api);
+			responses.getOwners(res, api);
 		})
 		.post((req, res) => {
+			const validator = new Validator();
+			const validationResult = validator.validate(req.body, schema);
+	
+			if (!validationResult.valid) {
+				const errors = validationResult.errors.map(error => `${error.property} ${error.message}.`);
+	
+				return res.status(400).jsonp
+				(
+					{
+						"status": 400,
+						"errors": errors
+					}
+				);
+			}
+
 			const id = Number(req.body.id);
 			const login = req.body.login;
 
-			if (!id || !login) {
-				res.status(400).jsonp({
-					"status": 400,
-					"message": "Request body object 'id' and/or 'login' is/are missing. (application/json)"
-				});
-		
-				return;
-			}
-
-			if (isNaN(id)) {
-				res.status(400).jsonp({
-					"status": 400,
-					"message": "Invalid 'id' object specified. The specified value isn't a valid integer."
-				});
-
-				return;
-			}
-
 			const api = getAPI(req, res);
 
-			postOwner(res, api, id, login);
+			responses.postOwner(res, api, id, login);
 		});
 
-	app.route("/v1/apujar/owners/:owner_id")
+	app.route("/v1/apujar/owners/:owner_id", param("owner_id").isInt())
 		.get((req, res) => {
-			const ownerID = Number(req.params.owner_id);
+			const result = validationResult(req);
 
-			if (isNaN(ownerID)) {
-				res.status(400).jsonp({
-					"status": 400,
-					"message": "Invalid 'owner_id' parameter specified. The specified value isn't a valid integer."
-				});
-
-				return;
+			if (!result.isEmpty()) {
+				return res.status(400).jsonp
+				(
+					{
+						"status": 400,
+						"errors": [ "param.owner_id is not of a type(s) number." ]
+					}
+				);
 			}
+
+			const ownerID = Number(req.params.owner_id);
 
 			const api = getAPI(req, res);
 
-			getOwner(res, api, ownerID);
+			responses.getOwner(res, api, ownerID);
 		})
 		.delete((req, res) => {
-			const ownerID = Number(req.params.owner_id);
+			const result = validationResult(req);
 
-			if (isNaN(ownerID)) {
-				res.status(400).jsonp({
-					"status": 400,
-					"message": "Invalid 'owner_id' parameter specified. The specified value isn't a valid integer."
-				});
-
-				return;
+			if (!result.isEmpty()) {
+				return res.status(400).jsonp
+				(
+					{
+						"status": 400,
+						"errors": [ "param.owner_id is not of a type(s) number." ]
+					}
+				);
 			}
+
+			const ownerID = Number(req.params.owner_id);
 
 			const api = getAPI(req, res);
 
-			deleteOwner(res, api, ownerID);
-		})
-		.patch((req, res) => {
-			const ownerID = Number(req.params.owner_id);
-
-			if (isNaN(ownerID)) {
-				res.status(400).jsonp({
-					"status": 400,
-					"message": "Invalid 'owner_id' parameter specified. The specified value isn't a valid integer."
-				});
-
-				return;
-			}
-
-			const login = req.body.login;
-
-			if (!login) {
-				res.status(400).jsonp({
-					"status": 400,
-					"message": "Request body object 'login' is missing. (application/json)"
-				});
-		
-				return;
-			}
-
-			const api = getAPI(req, res);
-
-			patchOwner(res, api, ownerID, login);
+			responses.deleteOwner(res, api, ownerID);
 		});
 };

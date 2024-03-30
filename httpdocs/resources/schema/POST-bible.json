@@ -1,0 +1,8 @@
+{
+    "type": "object",
+    "properties": {
+      "user_id": { "type": "number" },
+      "entry": { "type": "string" }
+    },
+    "required": [ "user_id", "entry" ]
+}

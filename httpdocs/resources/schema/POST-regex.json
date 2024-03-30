@@ -1,0 +1,10 @@
+{
+    "type": "object",
+    "properties": {
+      "pattern": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+      "exact_match": { "type": "boolean" },
+      "equal_chars": { "type": "boolean" },
+      "whitespace_limit": { "type": "boolean" }
+    },
+    "required": [ "pattern", "exact_match", "equal_chars", "whitespace_limit" ]
+}

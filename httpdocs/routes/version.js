@@ -1,8 +1,6 @@
-/* eslint-disable no-unexpected-multiline */
-
 module.exports.setup = (app) => {
-	app.get("/v1", (req, res) => {
-		res.jsonp
+	app.get("/v1", (_, res) => {
+		return res.jsonp
 		(
 			{
 				"status": 200,

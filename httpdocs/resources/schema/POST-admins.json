@@ -1,0 +1,8 @@
+{
+    "type": "object",
+    "properties": {
+      "id": { "type": "number" },
+      "login": { "type": "string" }
+    },
+    "required": [ "id", "login" ]
+}

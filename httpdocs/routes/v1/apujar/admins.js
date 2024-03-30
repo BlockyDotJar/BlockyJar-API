@@ -1,98 +1,79 @@
 const { getAPI } = require("../../../utils/twitch");
-const { getAdmin, getAdmins, postAdmin, deleteAdmin, patchAdmin } = require("../../../utils/responses");
+const { param, validationResult } = require("express-validator");
+const { Validator } = require("jsonschema");
+
+const responses = require("../../../utils/responses/admins");
+
+const schema = require("../../../resources/schema/POST-admins.json");
 
 module.exports.setup = (app) => {
 	app.route("/v1/apujar/admins")
 		.get((req, res) => {
 			const api = getAPI(req, res);
 
-			getAdmins(res, api);
+			responses.getAdmins(res, api);
 		})
 		.post((req, res) => {
+			const validator = new Validator();
+			const validationResult = validator.validate(req.body, schema);
+	
+			if (!validationResult.valid) {
+				const errors = validationResult.errors.map(error => `${error.property} ${error.message}.`);
+	
+				return res.status(400).jsonp
+				(
+					{
+						"status": 400,
+						"errors": errors
+					}
+				);
+			}
+
 			const id = Number(req.body.id);
 			const login = req.body.login;
 
-			if (!id || !login) {
-				res.status(400).jsonp({
-					"status": 400,
-					"message": "Request body object 'id' and/or 'login' is/are missing. (application/json)"
-				});
-		
-				return;
-			}
-
-			if (isNaN(id)) {
-				res.status(400).jsonp({
-					"status": 400,
-					"message": "Invalid 'id' object specified. The specified value isn't a valid integer."
-				});
-
-				return;
-			}
-
 			const api = getAPI(req, res);
 
-			postAdmin(res, api, id, login);
+			responses.postAdmin(res, api, id, login);
 		});
 
-	app.route("/v1/apujar/admins/:admin_id")
+	app.route("/v1/apujar/admins/:admin_id", param("admin_id").isInt())
 		.get((req, res) => {
-			const adminID = Number(req.params.admin_id);
+			const result = validationResult(req);
 
-			if (isNaN(adminID)) {
-				res.status(400).jsonp({
-					"status": 400,
-					"message": "Invalid 'admin_id' parameter specified. The specified value isn't a valid integer."
-				});
-
-				return;
+			if (!result.isEmpty()) {
+				return res.status(400).jsonp
+				(
+					{
+						"status": 400,
+						"errors": [ "param.admin_id is not of a type(s) number." ]
+					}
+				);
 			}
+
+			const adminID = Number(req.params.admin_id);
 
 			const api = getAPI(req, res);
 
-			getAdmin(res, api, adminID);
+			responses.getAdmin(res, api, adminID);
 		})
 		.delete((req, res) => {
-			const adminID = Number(req.params.admin_id);
+			const result = validationResult(req);
 
-			if (isNaN(adminID)) {
-				res.status(400).jsonp({
-					"status": 400,
-					"message": "Invalid 'admin_id' parameter specified. The specified value isn't a valid integer."
-				});
-
-				return;
+			if (!result.isEmpty()) {
+				return res.status(400).jsonp
+				(
+					{
+						"status": 400,
+						"errors": [ "param.admin_id is not of a type(s) number." ]
+					}
+				);
 			}
+
+			const adminID = Number(req.params.admin_id);
 
 			const api = getAPI(req, res);
 
-			deleteAdmin(res, api, adminID);
-		})
-		.patch((req, res) => {
-			const adminID = Number(req.params.admin_id);
-
-			if (isNaN(adminID)) {
-				res.status(400).jsonp({
-					"status": 400,
-					"message": "Invalid 'admin_id' parameter specified. The specified value isn't a valid integer."
-				});
-
-				return;
-			}
-
-			const login = req.body.login;
-
-			if (!login) {
-				res.status(400).jsonp({
-					"status": 400,
-					"message": "Request body object 'login' is missing. (application/json)"
-				});
-		
-				return;
-			}
-
-			const api = getAPI(req, res);
-
-			patchAdmin(res, api, adminID, login);
+			responses.deleteAdmin(res, api, adminID);
 		});
 };

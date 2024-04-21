@@ -1,3 +1,7 @@
+/*
+ * POST /v1/flags
+ */
+
 async function checkFlags(res, flags, flagItems)
 {
     const checkedFlags = flagItems.map(flagItem =>

@@ -40,7 +40,7 @@ async function setup(app)
 		.get((req, res) =>
 		{
 			const params = req.params;
-			const valid = validateParameter(req, "admin_id", res);
+			const valid = validateParameter(req, "admin_id", "number", res);
 
 			if (!valid)
 			{
@@ -56,7 +56,7 @@ async function setup(app)
 		.delete((req, res) =>
 		{
 			const params = req.params;
-			const valid = validateParameter(req, "admin_id", res);
+			const valid = validateParameter(req, "admin_id", "number", res);
 
 			if (!valid)
 			{

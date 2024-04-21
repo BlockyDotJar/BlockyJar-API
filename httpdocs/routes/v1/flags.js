@@ -1,6 +1,6 @@
 const { checkFlags } = require("../../utils/responses/flags");
 
-const { validate } = require("../../../utils/validator");
+const { validate } = require("../../utils/validator");
 
 const schema = require("../../resources/schema/flags/POST.json");
 

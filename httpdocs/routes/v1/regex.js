@@ -1,6 +1,6 @@
 const { generate } = require("../../utils/responses/regex");
 
-const { validate } = require("../../../utils/validator");
+const { validate } = require("../../utils/validator");
 
 const schema = require("../../resources/schema/regex/POST.json");
 

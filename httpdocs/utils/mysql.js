@@ -120,6 +120,19 @@ async function getAllLinks(res, connection)
     return links;
 }
 
+async function isValidUUID(res, connection, uuid)
+{
+    const links = await getAllLinks(res, connection);
+
+    const isValidUUID = links.some(link =>
+    {
+        const linkUUID = link.uuid;
+        return linkUUID === uuid;
+    });
+
+    return isValidUUID;
+}
+
 /*
  * Export modules
  */
@@ -133,5 +146,6 @@ module.exports =
     getAllOwners: getAllOwners,
     isOwner: isOwner,
     getAllBibleEntries: getAllBibleEntries,
-    getAllLinks: getAllLinks
+    getAllLinks: getAllLinks,
+    isValidUUID:  isValidUUID
 };

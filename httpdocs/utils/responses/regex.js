@@ -1,5 +1,9 @@
 const replacements = require("../../resources/replacements.json");
 
+/*
+ * POST /v1/regex
+ */
+
 async function generate(res, pattern, exactMatch, equalChars, whitespaceLimit, matchRegExChars)
 {
     const regEx = pattern.join("|");

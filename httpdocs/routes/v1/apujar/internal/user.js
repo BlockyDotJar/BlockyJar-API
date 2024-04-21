@@ -1,7 +1,7 @@
 const { getAPI } = require("../../../../utils/twitch");
 
 const { param } = require("express-validator");
-const { validate, validateParameter } = require("../../../utils/validator");
+const { validate, validateParameter } = require("../../../../utils/validator");
 
 const responses = require("../../../../utils/responses/user");
 
@@ -14,7 +14,7 @@ async function setup(app)
         const params = req.params;
         const body = req.body;
 
-        let valid = validateParameter(req, "user_id", res);
+        let valid = validateParameter(req, "user_id", "number", res);
 
         if (!valid)
         {

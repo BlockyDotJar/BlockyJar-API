@@ -30,7 +30,7 @@ const validate = (body, schema, res) =>
     return true;
 };
 
-const validateParameter = (req, paramID, res) =>
+const validateParameter = (req, paramID, paramType, res) =>
 {
     const valResult = validationResult(req);
 
@@ -40,7 +40,7 @@ const validateParameter = (req, paramID, res) =>
         (
             {
                 "status": 400,
-                "errors": [ `param.${paramID} is not of a type(s) number.` ]
+                "errors": [ `param.${paramID} is not of a type(s) ${paramType}.` ]
             }
         );
 

@@ -53,7 +53,7 @@ async function setup(app)
 		.get((req, res) =>
 		{
 			const params = req.params;
-			const valid = validateParameter(req, "bible_page", res);
+			const valid = validateParameter(req, "bible_page", "number", res);
 
 			if (!valid)
 			{
@@ -69,7 +69,7 @@ async function setup(app)
 		.delete((req, res) =>
 		{
 			const params = req.params;
-			const valid = validateParameter(req, "bible_page", res);
+			const valid = validateParameter(req, "bible_page", "number", res);
 
 			if (!valid)
 			{
@@ -87,7 +87,7 @@ async function setup(app)
 			const params = req.params;
 			const body = req.body;
 
-			let valid = validateParameter(req, "bible_page", res);
+			let valid = validateParameter(req, "bible_page", "number", res);
 
 			if (!valid)
 			{

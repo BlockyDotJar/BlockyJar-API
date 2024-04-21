@@ -5,6 +5,10 @@ const { DateTime } = require("dateutils");
 
 const mysql = require("../mysql");
 
+/*
+ * Utility functions
+ */
+
 async function getID(res)
 {
     const textEncoder = new TextEncoder();
@@ -31,6 +35,10 @@ async function getID(res)
 
     return [ id, uuid ];
 }
+
+/*
+ * POST /v1/links
+ */
 
 async function createLink(res, link, expiresOn) 
 {
@@ -60,7 +68,44 @@ async function createLink(res, link, expiresOn)
 }
 
 /*
+ * DELETE /v1/links/:link_uuid
+ */
+async function deleteLink(res, linkUUID) 
+{
+    const connection = await mysql.createDatabaseConnection();
+    const validUUID = await mysql.isValidUUID(res, connection, linkUUID);
+
+    if (!validUUID)
+    {
+        return res.status(404).jsonp
+        (
+            {
+                "status": 404,
+                "message": `No link for uuid '${linkUUID}' found.`
+            }
+        );
+    }
+
+    const query = "DELETE FROM `links` WHERE `uuid` = ?";
+    const values = [ linkUUID ];
+
+    await mysql.requestDatabase(connection, query, values, res);
+
+    return res.status(200).jsonp
+    (
+        {
+            "status": 200,
+            "message": `Successfully deleted link with uuid ${linkUUID}.`
+        }
+    );
+}
+
+/*
  * Export modules
  */
 
-module.exports.createLink = createLink;
+module.exports =
+{
+    createLink: createLink,
+    deleteLink: deleteLink
+}

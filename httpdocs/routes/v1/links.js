@@ -1,6 +1,7 @@
-const { createLink } = require("../../utils/responses/links");
+const { createLink, deleteLink } = require("../../utils/responses/links");
 
-const { validate } = require("../../../utils/validator");
+const { param } = require("express-validator");
+const { validate, validateParameter } = require("../../utils/validator");
 
 const schema = require("../../resources/schema/links/POST.json");
 
@@ -20,6 +21,21 @@ async function setup(app)
         const expiresOn = body.expires_on;
 
         createLink(res, link, expiresOn);
+    });
+
+    app.delete("/v1/links/:link_uuid", param("link_uuid").isUUID(), (req, res) =>
+    {
+        const params = req.params;
+        const valid = validateParameter(req, "link_uuid", "uuid", res);
+
+        if (!valid) 
+        {
+            return;
+        }
+
+        const linkUUID = params.link_uuid;
+
+        deleteLink(res, linkUUID)
     });
 }
 

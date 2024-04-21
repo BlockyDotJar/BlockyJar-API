@@ -5,17 +5,20 @@ const { getUsers, getUsersByID } = require("../twitch");
  * GET /v1/apujar/bible/:bible_page
  */
 
-async function getBibleEntry(res, api, biblePage) {
+async function getBibleEntry(res, api, biblePage)
+{
     const { userID } = await getUsers(res, api);
     const connection = await mysql.createDatabaseConnection();
 
     getBibleEntryResponse(res, connection, biblePage, userID);
 }
 
-async function getBibleEntryResponse(res, connection, biblePage, userID) {
+async function getBibleEntryResponse(res, connection, biblePage, userID)
+{
     const hasAdminPerms = await mysql.isAdmin(res, connection, userID);
 
-    if (!hasAdminPerms) {
+    if (!hasAdminPerms)
+    {
         return res.status(403).jsonp
         (
             {
@@ -26,9 +29,15 @@ async function getBibleEntryResponse(res, connection, biblePage, userID) {
     }
 
     const bibleEntries = await mysql.getAllBibleEntries(res, connection);
-    const bibleEntryExists = bibleEntries.some(entry => entry.page === biblePage);
+    
+    const bibleEntryExists = bibleEntries.some(entry =>
+    {
+        const entryPage = entry.page;
+        return entryPage === biblePage;
+    });
 
-    if (!bibleEntryExists) {
+    if (!bibleEntryExists)
+    {
         return res.status(404).jsonp
         (
             {
@@ -64,17 +73,20 @@ async function getBibleEntryResponse(res, connection, biblePage, userID) {
  * GET /v1/apujar/bible
  */
 
-async function getBibleEntries(res, api, limit, random) {
+async function getBibleEntries(res, api, limit, random)
+{
     const { userID } = await getUsers(res, api);
     const connection = await mysql.createDatabaseConnection();
 
     getBibleEntriesResponse(res, connection, limit, random, userID);
 }
 
-async function getBibleEntriesResponse(res, connection, limit, random, userID) {
+async function getBibleEntriesResponse(res, connection, limit, random, userID)
+{
     const hasAdminPerms = await mysql.isAdmin(res, connection, userID);
 
-    if (!hasAdminPerms) {
+    if (!hasAdminPerms)
+    {
         return res.status(403).jsonp
         (
             {
@@ -87,20 +99,23 @@ async function getBibleEntriesResponse(res, connection, limit, random, userID) {
     let query = "SELECT * FROM `bible`";
     let values = [];
 
-    if (random) {
+    if (random)
+    {
         query += " ORDER BY RAND()";
     }
 
-    if (limit) {
+    if (limit) 
+    {
         query += " LIMIT ?";
         values.push(limit);
     }
 
-    const [results] = await mysql.requestDatabase(connection, query, values, res);
+    const [ results ] = await mysql.requestDatabase(connection, query, values, res);
 
     const bibleEntries = results[0];
 
-    const entries = bibleEntries.map(entry => {
+    const entries = bibleEntries.map(entry =>
+    {
         const biblePage = entry.page;
         const bibleEntry = entry.entry;
         const addedAt = entry.added_at;
@@ -131,7 +146,8 @@ async function getBibleEntriesResponse(res, connection, limit, random, userID) {
  * POST /v1/apujar/bible
  */
 
-async function postBibleEntry(res, api, bibleEntry, bibleUserID) {
+async function postBibleEntry(res, api, bibleEntry, bibleUserID)
+{
     const { userID } = await getUsers(res, api);
     const { userLogin } = await getUsersByID(res, api, bibleUserID);
     const connection = await mysql.createDatabaseConnection();
@@ -139,10 +155,12 @@ async function postBibleEntry(res, api, bibleEntry, bibleUserID) {
     postBibleEntryResponse(res, connection, bibleEntry, bibleUserID, userID, userLogin);
 }
 
-async function postBibleEntryResponse(res, connection, bibleEntry, bibleUserID, userID, userLogin) {
+async function postBibleEntryResponse(res, connection, bibleEntry, bibleUserID, userID, userLogin)
+{
     const hasAdminPerms = await mysql.isAdmin(res, connection, userID);
 
-    if (!hasAdminPerms) {
+    if (!hasAdminPerms)
+    {
         return res.status(403).jsonp
         (
             {
@@ -153,9 +171,15 @@ async function postBibleEntryResponse(res, connection, bibleEntry, bibleUserID, 
     }
 
     const bibleEntries = await mysql.getAllBibleEntries(res, connection);
-    const bibleEntryAlreadyExists = bibleEntries.some(row => row.entry === bibleEntry);
 
-    if (bibleEntryAlreadyExists) {
+    const bibleEntryAlreadyExists = bibleEntries.some(row =>
+    {
+        const entry = row.entry;
+        return entry === bibleEntry;
+    });
+
+    if (bibleEntryAlreadyExists)
+    {
         return res.status(409).jsonp
         (
             {
@@ -170,9 +194,10 @@ async function postBibleEntryResponse(res, connection, bibleEntry, bibleUserID, 
     const addedAt = date.toISOString();
 
     const query = "INSERT INTO `bible`(`page`, `entry`, `addedAt`, `userID`, `userLogin`) VALUES(?, ?, ?, ?, ?)";
-    const values = [page, bibleEntry, addedAt, bibleUserID, userLogin];
+    const values = [ page, bibleEntry, addedAt, bibleUserID, userLogin ];
 
     await mysql.requestDatabase(connection, query, values, res);
+
     getBibleEntriesResponse(res, connection, null, false, userID);
 }
 
@@ -180,17 +205,20 @@ async function postBibleEntryResponse(res, connection, bibleEntry, bibleUserID, 
  * DELETE /v1/apujar/bible/:bible_page
  */
 
-async function deleteBibleEntry(res, api, biblePage) {
+async function deleteBibleEntry(res, api, biblePage)
+{
     const { userID } = await getUsers(res, api);
     const connection = await mysql.createDatabaseConnection();
 
     deleteBibleEntryResponse(res, connection, biblePage, userID);
 }
 
-async function deleteBibleEntryResponse(res, connection, biblePage, userID) {
+async function deleteBibleEntryResponse(res, connection, biblePage, userID)
+{
     const hasAdminPerms = await mysql.isAdmin(res, connection, userID);
 
-    if (!hasAdminPerms) {
+    if (!hasAdminPerms) 
+    {
         return res.status(403).jsonp
         (
             {
@@ -201,9 +229,15 @@ async function deleteBibleEntryResponse(res, connection, biblePage, userID) {
     }
 
     const bibleEntries = await mysql.getAllBibleEntries(res, connection);
-    const bibleEntryExists = bibleEntries.some(entry => entry.page === biblePage);
+    
+    const bibleEntryExists = bibleEntries.some(entry =>
+    {
+        const entryPage = entry.page;
+        return entryPage === biblePage;
+    });
 
-    if (!bibleEntryExists) {
+    if (!bibleEntryExists)
+    {
         return res.status(404).jsonp
         (
             {
@@ -214,9 +248,10 @@ async function deleteBibleEntryResponse(res, connection, biblePage, userID) {
     }
 
     const query = "DELETE FROM `bible` WHERE `page` = ?";
-    const values = [biblePage];
+    const values = [ biblePage ];
 
     await mysql.requestDatabase(connection, query, values, res);
+
     getBibleEntriesResponse(res, connection, null, false, userID);
 }
 
@@ -224,17 +259,20 @@ async function deleteBibleEntryResponse(res, connection, biblePage, userID) {
  * PATCH /v1/apujar/bible/:bible_page
  */
 
-async function patchBibleEntry(res, api, biblePage, bibleEntry) {
+async function patchBibleEntry(res, api, biblePage, bibleEntry)
+{
     const { userID } = await getUsers(res, api);
     const connection = await mysql.createDatabaseConnection();
 
     patchBibleEntryResponse(res, connection, biblePage, bibleEntry, userID);
 }
 
-async function patchBibleEntryResponse(res, connection, biblePage, bibleEntry, userID) {
+async function patchBibleEntryResponse(res, connection, biblePage, bibleEntry, userID)
+{
     const hasAdminPerms = await mysql.isAdmin(res, connection, userID);
 
-    if (!hasAdminPerms) {
+    if (!hasAdminPerms)
+    {
         return res.status(403).jsonp
         (
             {
@@ -245,9 +283,15 @@ async function patchBibleEntryResponse(res, connection, biblePage, bibleEntry, u
     }
 
     const bibleEntries = await mysql.getAllBibleEntries(res, connection);
-    const bibleEntryExists = bibleEntries.some(entry => entry.page === biblePage);
 
-    if (!bibleEntryExists) {
+    const bibleEntryExists = bibleEntries.some(entry =>
+    {
+        const entryPage = entry.page;
+        return entryPage === biblePage;
+    });
+
+    if (!bibleEntryExists)
+    {
         return res.status(404).jsonp
         (
             {
@@ -260,7 +304,8 @@ async function patchBibleEntryResponse(res, connection, biblePage, bibleEntry, u
     const row = bibleEntries[biblePage - 1];
     const entry = row.entry;
 
-    if (entry === bibleEntry) {
+    if (entry === bibleEntry)
+    {
         return res.status(409).jsonp
         (
             {
@@ -271,9 +316,10 @@ async function patchBibleEntryResponse(res, connection, biblePage, bibleEntry, u
     }
 
     const query = "UPDATE `bible` SET `entry` = ? WHERE `page` = ?";
-    const values = [bibleEntry, biblePage];
+    const values = [ bibleEntry, biblePage ];
 
     await mysql.requestDatabase(connection, query, values, res);
+
     getBibleEntriesResponse(res, connection, null, false, userID);
 }
 
@@ -281,7 +327,8 @@ async function patchBibleEntryResponse(res, connection, biblePage, bibleEntry, u
  * Export modules
  */
 
-module.exports = {
+module.exports =
+{
     getBibleEntry: getBibleEntry,
     getBibleEntries: getBibleEntries,
     postBibleEntry: postBibleEntry,

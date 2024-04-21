@@ -5,17 +5,20 @@ const { getUsers } = require("../twitch");
  * GET /v1/apujar/owners/:owner_id
  */
 
-async function getOwner(res, api, ownerID) {
+async function getOwner(res, api, ownerID)
+{
     const { userID } = await getUsers(res, api);
     const connection = await mysql.createDatabaseConnection();
 
     getOwnerResponse(res, connection, userID, ownerID);
 }
 
-async function getOwnerResponse(res, connection, userID, ownerID) {
+async function getOwnerResponse(res, connection, userID, ownerID)
+{
     const hasOwnerPerms = await mysql.isOwner(res, connection, userID);
 
-    if (!hasOwnerPerms) {
+    if (!hasOwnerPerms)
+    {
         return res.status(403).jsonp
         (
             {
@@ -26,9 +29,15 @@ async function getOwnerResponse(res, connection, userID, ownerID) {
     }
 
     const owners = await mysql.getAllOwners(res, connection);
-    const owner = owners.find(row => row.userID === ownerID);
 
-    if (owner === undefined) {
+    const owner = owners.find(row => 
+    {
+        const id = row.userID;
+        return id === ownerID;
+    });
+
+    if (owner === undefined)
+    {
         return res.status(404).jsonp
         (
             {
@@ -57,17 +66,20 @@ async function getOwnerResponse(res, connection, userID, ownerID) {
  * GET /v1/apujar/owners
  */
 
-async function getOwners(res, api) {
+async function getOwners(res, api)
+{
     const { userID } = await getUsers(res, api);
     const connection = await mysql.createDatabaseConnection();
 
     getOwnersResponse(res, connection, userID);
 }
 
-async function getOwnersResponse(res, connection, userID) {
+async function getOwnersResponse(res, connection, userID)
+{
     const hasOwnerPerms = await mysql.isOwner(res, connection, userID);
 
-    if (!hasOwnerPerms) {
+    if (!hasOwnerPerms)
+    {
         return res.status(403).jsonp
         (
             {
@@ -79,7 +91,8 @@ async function getOwnersResponse(res, connection, userID) {
 
     const owners = await mysql.getAllOwners(res, connection);
 
-    const users = owners.map(owner => {
+    const users = owners.map(owner =>
+    {
         const id = owner.userID;
         const login = owner.userLogin;
 
@@ -102,15 +115,18 @@ async function getOwnersResponse(res, connection, userID) {
  * POST /v1/apujar/owners
  */
 
-async function postOwner(res, api, id, login) {
+async function postOwner(res, api, id, login)
+{
     const { userID } = await getUsers(res, api);
     const connection = await mysql.createDatabaseConnection();
 
     postOwnerResponse(res, connection, userID, id, login);
 }
 
-async function postOwnerResponse(res, connection, userID, id, login) {
-    if (userID !== 755628467 && userID !== 896181679) {
+async function postOwnerResponse(res, connection, userID, id, login)
+{
+    if (userID !== 755628467 && userID !== 896181679)
+    {
         return res.status(403).jsonp
         (
             {
@@ -122,7 +138,8 @@ async function postOwnerResponse(res, connection, userID, id, login) {
 
     const hasOwnerPerms = await mysql.isOwner(res, connection, id);
 
-    if (hasOwnerPerms) {
+    if (hasOwnerPerms)
+    {
         return res.status(409).jsonp
         (
             {
@@ -135,14 +152,16 @@ async function postOwnerResponse(res, connection, userID, id, login) {
     const hasAdminPerms = await mysql.isAdmin(res, connection, id);
 
     let query = "INSERT INTO `admins`(`userID`, `userLogin`, `isOwner`) VALUES(?, ?, ?)";
-    let values = [id, login, true];
+    let values = [ id, login, true ];
 
-    if (hasAdminPerms) {
+    if (hasAdminPerms)
+    {
         query = "UPDATE `admins` SET `isOwner` = ? WHERE `userID` = ?";
-        values = [true, id];
+        values = [ true, id ];
     }
 
     await mysql.requestDatabase(connection, query, values, res);
+    
     getOwnersResponse(res, connection, userID);
 }
 
@@ -150,15 +169,18 @@ async function postOwnerResponse(res, connection, userID, id, login) {
  * DELETE /v1/apujar/owners/:owner_id
  */
 
-async function deleteOwner(res, api, ownerID) {
+async function deleteOwner(res, api, ownerID)
+{
     const { userID } = await getUsers(res, api);
     const connection = await mysql.createDatabaseConnection();
 
     deleteOwnerResponse(res, connection, userID, ownerID);
 }
 
-async function deleteOwnerResponse(res, connection, userID, ownerID) {
-    if (userID !== 755628467 && userID !== 896181679) {
+async function deleteOwnerResponse(res, connection, userID, ownerID)
+{
+    if (userID !== 755628467 && userID !== 896181679)
+    {
         return res.status(403).jsonp
         (
             {
@@ -170,7 +192,8 @@ async function deleteOwnerResponse(res, connection, userID, ownerID) {
 
     const hasOwnerPerms = await mysql.isOwner(res, connection, ownerID);
 
-    if (!hasOwnerPerms) {
+    if (!hasOwnerPerms)
+    {
         return res.status(404).jsonp
         (
             {
@@ -181,9 +204,10 @@ async function deleteOwnerResponse(res, connection, userID, ownerID) {
     }
 
     const query = "DELETE FROM `admins` WHERE `userID` = ?";
-    const values = [ownerID];
+    const values = [ ownerID ];
 
     await mysql.requestDatabase(connection, query, values, res);
+
     getOwnersResponse(res, connection, userID);
 }
 
@@ -191,7 +215,8 @@ async function deleteOwnerResponse(res, connection, userID, ownerID) {
  * Export modules
  */
 
-module.exports = {
+module.exports =
+{
     getOwner: getOwner,
     getOwners: getOwners,
     postOwner: postOwner,

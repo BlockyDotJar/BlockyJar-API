@@ -1,0 +1,7 @@
+{
+    "type": "object",
+    "properties": {
+      "uuid": { "type": "uuid" }
+    },
+    "required": [ "uuid" ]
+}

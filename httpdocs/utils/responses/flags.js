@@ -1,5 +1,7 @@
-async function checkFlags(res, flags, flagItems) {
-    const checkedFlags = flagItems.map(flagItem => {
+async function checkFlags(res, flags, flagItems)
+{
+    const checkedFlags = flagItems.map(flagItem =>
+    {
         const flag = Number(flagItem.flag);
         const flagName = flagItem.name;
 

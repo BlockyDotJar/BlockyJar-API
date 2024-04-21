@@ -1,28 +1,30 @@
 const { checkFlags } = require("../../utils/responses/flags");
-const { Validator } = require("jsonschema");
 
-const schema = require("../../resources/schema/POST-flags.json");
+const { validate } = require("../../../utils/validator");
 
-module.exports.setup = (app) => {
-    app.post("/v1/flags", (req, res) => {
-        const validator = new Validator();
-        const validationResult = validator.validate(req.body, schema);
+const schema = require("../../resources/schema/flags/POST.json");
 
-        if (!validationResult.valid) {
-            const errors = validationResult.errors.map(error => `${error.property} ${error.message}.`);
+async function setup(app)
+{
+    app.post("/v1/flags", (req, res) =>
+    {
+        const body = req.body;
+        const valid = validate(body, schema, res);
 
-            return res.status(400).jsonp
-            (
-                {
-                    "status": 400,
-                    "errors": errors
-                }
-            );
+        if (!valid)
+        {
+            return;
         }
 
-        const flags = Number(req.body.flags);
-        const flagItems = req.body.flag_items;
+        const flags = Number(body.flags);
+        const flagItems = body.flag_items;
 
         checkFlags(res, flags, flagItems);
     });
-};
+}
+
+/*
+ * Export modules
+ */
+
+module.exports.setup = setup;

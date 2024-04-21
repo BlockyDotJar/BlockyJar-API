@@ -1,79 +1,77 @@
 const { getAPI } = require("../../../utils/twitch");
-const { param, validationResult } = require("express-validator");
-const { Validator } = require("jsonschema");
+
+const { param } = require("express-validator");
+const { validate, validateParameter } = require("../../../utils/validator");
 
 const responses = require("../../../utils/responses/owners");
 
-const schema = require("../../../resources/schema/POST-owners.json");
+const schema = require("../../../resources/schema/owners/POST.json");
 
-module.exports.setup = (app) => {
+async function setup(app)
+{
 	app.route("/v1/apujar/owners")
-		.get((req, res) => {
-			const api = getAPI(req, res);
 
+		.get((req, res) =>
+		{
+			const api = getAPI(req, res);
 			responses.getOwners(res, api);
 		})
-		.post((req, res) => {
-			const validator = new Validator();
-			const validationResult = validator.validate(req.body, schema);
+
+		.post((req, res) =>
+		{
+			const body = req.body;
+			const valid = validate(body, schema, res);
 	
-			if (!validationResult.valid) {
-				const errors = validationResult.errors.map(error => `${error.property} ${error.message}.`);
-	
-				return res.status(400).jsonp
-				(
-					{
-						"status": 400,
-						"errors": errors
-					}
-				);
+			if (!valid)
+			{
+				return;
 			}
 
-			const id = Number(req.body.user_id);
-			const login = req.body.user_login;
+			const userID = Number(body.user_id);
+			const userLogin = body.user_login;
 
 			const api = getAPI(req, res);
 
-			responses.postOwner(res, api, id, login);
+			responses.postOwner(res, api, userID, userLogin);
 		});
 
 	app.route("/v1/apujar/owners/:owner_id", param("owner_id").isInt())
-		.get((req, res) => {
-			const result = validationResult(req);
 
-			if (!result.isEmpty()) {
-				return res.status(400).jsonp
-				(
-					{
-						"status": 400,
-						"errors": [ "param.owner_id is not of a type(s) number." ]
-					}
-				);
+		.get((req, res) =>
+		{
+			const params = req.params;
+			const valid = validateParameter(req, "owner_id", res);
+
+			if (!valid)
+			{
+				return;
 			}
 
-			const ownerID = Number(req.params.owner_id);
-
+			const ownerID = Number(params.owner_id);
 			const api = getAPI(req, res);
 
 			responses.getOwner(res, api, ownerID);
 		})
-		.delete((req, res) => {
-			const result = validationResult(req);
 
-			if (!result.isEmpty()) {
-				return res.status(400).jsonp
-				(
-					{
-						"status": 400,
-						"errors": [ "param.owner_id is not of a type(s) number." ]
-					}
-				);
+		.delete((req, res) => 
+		{
+			const params = req.params;
+			const valid = validateParameter(req, "owner_id", res);
+
+			if (!valid)
+			{
+				return;
 			}
 
-			const ownerID = Number(req.params.owner_id);
-
+			const ownerID = Number(params.owner_id);
 			const api = getAPI(req, res);
 
 			responses.deleteOwner(res, api, ownerID);
 		});
-};
+}
+
+/*
+ * Export modules
+ */
+
+module.exports.setup = setup;

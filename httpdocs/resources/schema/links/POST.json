@@ -1,0 +1,8 @@
+{
+    "type": "object",
+    "properties": {
+      "link": { "type": "uri" },
+      "expires_on": { "type": "date" }
+    },
+    "required": [ "link" ]
+}

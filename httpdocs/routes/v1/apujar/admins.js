@@ -1,79 +1,77 @@
 const { getAPI } = require("../../../utils/twitch");
-const { param, validationResult } = require("express-validator");
-const { Validator } = require("jsonschema");
+
+const { param } = require("express-validator");
+const { validate, validateParameter } = require("../../../utils/validator");
 
 const responses = require("../../../utils/responses/admins");
 
-const schema = require("../../../resources/schema/POST-admins.json");
+const schema = require("../../../resources/schema/admins/POST.json");
 
-module.exports.setup = (app) => {
+async function setup(app)
+{
 	app.route("/v1/apujar/admins")
-		.get((req, res) => {
-			const api = getAPI(req, res);
 
+		.get((req, res) =>
+		{
+			const api = getAPI(req, res);
 			responses.getAdmins(res, api);
 		})
-		.post((req, res) => {
-			const validator = new Validator();
-			const validationResult = validator.validate(req.body, schema);
+
+		.post((req, res) =>
+		{
+			const body = req.body;
+			const valid = validate(body, schema, res);
 	
-			if (!validationResult.valid) {
-				const errors = validationResult.errors.map(error => `${error.property} ${error.message}.`);
-	
-				return res.status(400).jsonp
-				(
-					{
-						"status": 400,
-						"errors": errors
-					}
-				);
+			if (!valid)
+			{
+				return;
 			}
 
-			const id = Number(req.body.user_id);
-			const login = req.body.user_login;
+			const userID = Number(body.user_id);
+			const userLogin = body.user_login;
 
 			const api = getAPI(req, res);
 
-			responses.postAdmin(res, api, id, login);
+			responses.postAdmin(res, api, userID, userLogin);
 		});
 
 	app.route("/v1/apujar/admins/:admin_id", param("admin_id").isInt())
-		.get((req, res) => {
-			const result = validationResult(req);
 
-			if (!result.isEmpty()) {
-				return res.status(400).jsonp
-				(
-					{
-						"status": 400,
-						"errors": [ "param.admin_id is not of a type(s) number." ]
-					}
-				);
+		.get((req, res) =>
+		{
+			const params = req.params;
+			const valid = validateParameter(req, "admin_id", res);
+
+			if (!valid)
+			{
+				return;
 			}
 
-			const adminID = Number(req.params.admin_id);
-
+			const adminID = Number(params.admin_id);
 			const api = getAPI(req, res);
 
 			responses.getAdmin(res, api, adminID);
 		})
-		.delete((req, res) => {
-			const result = validationResult(req);
 
-			if (!result.isEmpty()) {
-				return res.status(400).jsonp
-				(
-					{
-						"status": 400,
-						"errors": [ "param.admin_id is not of a type(s) number." ]
-					}
-				);
+		.delete((req, res) =>
+		{
+			const params = req.params;
+			const valid = validateParameter(req, "admin_id", res);
+
+			if (!valid)
+			{
+				return;
 			}
 
-			const adminID = Number(req.params.admin_id);
-
+			const adminID = Number(params.admin_id);
 			const api = getAPI(req, res);
 
 			responses.deleteAdmin(res, api, adminID);
 		});
-};
+}
+
+/*
+ * Export modules
+ */
+
+module.exports.setup = setup;

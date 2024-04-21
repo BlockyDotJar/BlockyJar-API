@@ -1,59 +1,47 @@
 const { getAPI } = require("../../../utils/twitch");
-const { param, query, validationResult } = require("express-validator");
-const { Validator } = require("jsonschema");
+
+const { param, query } = require("express-validator");
+const { validate, validateParameter, validateParameters } = require("../../../utils/validator");
 
 const responses = require("../../../utils/responses/bible");
 
-const postSchema = require("../../../resources/schema/POST-bible.json");
-const patchSchema = require("../../../resources/schema/PATCH-bible.json");
+const postSchema = require("../../../resources/schema/bible/POST.json");
+const patchSchema = require("../../../resources/schema/bible/PATCH.json");
 
-module.exports.setup = (app) => {
+async function setup(app)
+{
 	app.route("/v1/apujar/bible")
-		.get(query("limit").optional().isInt(), query("random").optional().isBoolean(), (req, res) => {
-			const result = validationResult(req);
 
-			if (!result.isEmpty()) {
-				const errors = result.array().map(error => {
-					const path = error.path;
-					const type = path === "limit" ? "number" : "boolean";
+		.get(query("limit").optional().isInt(), query("random").optional().isBoolean(), (req, res) =>
+		{
+			const query = req.query;
+			const valid = validateParameters(req, res);
 
-					return `query.${path} is not of a type(s) ${type}.`
-				});
-
-				return res.status(400).jsonp
-				(
-					{
-						"status": 400,
-						"errors": errors
-					}
-				);
+			if (!valid)
+			{
+				return;
 			}
 
-			const limit = Number(req.query.limit);
-			const random = Boolean(req.query.random);
+			const limit = Number(query.limit);
+			const random = Boolean(query.random);
 
 			const api = getAPI(req, res);
 
 			responses.getBibleEntries(res, api, limit, random)
 		})
-		.post((req, res) => {
-			const validator = new Validator();
-			const validationResult = validator.validate(req.body, postSchema);
+
+		.post((req, res) =>
+		{
+			const body = req.body;
+			const valid = validate(body, postSchema, res);
 	
-			if (!validationResult.valid) {
-				const errors = validationResult.errors.map(error => `${error.property} ${error.message}.`);
-	
-				return res.status(400).jsonp
-				(
-					{
-						"status": 400,
-						"errors": errors
-					}
-				);
+			if (!valid)
+			{
+				return;
 			}
 
-			const userID = Number(req.body.user_id);
-			const entry = req.body.entry;
+			const userID = Number(body.user_id);
+			const entry = body.entry;
 
             const api = getAPI(req, res);
 
@@ -61,78 +49,69 @@ module.exports.setup = (app) => {
 		});
 
 	app.route("/v1/apujar/bible/:bible_page", param("bible_page").isInt())
-		.get((req, res) => {
-			const result = validationResult(req);
 
-			if (!result.isEmpty()) {
-				return res.status(400).jsonp
-				(
-					{
-						"status": 400,
-						"errors": [ "param.bible_page is not of a type(s) number." ]
-					}
-				);
+		.get((req, res) =>
+		{
+			const params = req.params;
+			const valid = validateParameter(req, "bible_page", res);
+
+			if (!valid)
+			{
+				return;
 			}
 
-			const biblePage = Number(req.params.bible_page);
-
+			const biblePage = Number(params.bible_page);
             const api = getAPI(req, res);
 
 			responses.getBibleEntry(res, api, biblePage);
 		})
-		.delete((req, res) => {
-			const result = validationResult(req);
 
-			if (!result.isEmpty()) {
-				return res.status(400).jsonp
-				(
-					{
-						"status": 400,
-						"errors": [ "param.bible_page is not of a type(s) number." ]
-					}
-				);
+		.delete((req, res) =>
+		{
+			const params = req.params;
+			const valid = validateParameter(req, "bible_page", res);
+
+			if (!valid)
+			{
+				return;
 			}
 
-			const biblePage = Number(req.params.bible_page);
-
+			const biblePage = Number(params.bible_page);
             const api = getAPI(req, res);
 
 			responses.deleteBibleEntry(res, api, biblePage);
 		})
-		.patch((req, res) => {
-			const result = validationResult(req);
 
-			if (!result.isEmpty()) {
-				return res.status(400).jsonp
-				(
-					{
-						"status": 400,
-						"errors": [ "param.bible_page is not of a type(s) number." ]
-					}
-				);
+		.patch((req, res) =>
+		{
+			const params = req.params;
+			const body = req.body;
+
+			let valid = validateParameter(req, "bible_page", res);
+
+			if (!valid)
+			{
+				return;
 			}
 
-			const biblePage = Number(req.params.bible_page);
+			const biblePage = Number(params.bible_page);
 
-			const validator = new Validator();
-			const valResult = validator.validate(req.body, patchSchema);
+			valid = validate(body, patchSchema, res);
 	
-			if (!valResult.valid) {
-				const errors = valResult.errors.map(error => `${error.property} ${error.message}.`);
-	
-				return res.status(400).jsonp
-				(
-					{
-						"status": 400,
-						"errors": errors
-					}
-				);
+			if (!valid)
+			{
+				return;
 			}
 
-			const entry = req.body.entry;
-
+			const entry = body.entry;
             const api = getAPI(req, res);
 
 			responses.patchBibleEntry(res, api, biblePage, entry);
 		});
-};
+}
+
+/*
+ * Export modules
+ */
+
+module.exports.setup = setup;

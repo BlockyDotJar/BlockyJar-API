@@ -1,20 +1,25 @@
 const replacements = require("../../resources/replacements.json");
 
-async function generate(res, pattern, exactMatch, equalChars, whitespaceLimit) {
+async function generate(res, pattern, exactMatch, equalChars, whitespaceLimit, matchRegExChars)
+{
     const regEx = pattern.join("|");
 
     let newRegEx = regEx;
 
-    if (equalChars) {
+    if (equalChars)
+    {
         newRegEx = "";
 
-        for (const char of regEx) {
-            if (replacements[char]) {
+        for (const char of regEx)
+        {
+            if (replacements[char])
+            {
                 newRegEx += `[${replacements[char]}][\\W_]*?`;
                 continue;
             }
 
-            if (char.match(/[|()?+[\]\\]+/)) {
+            if (matchRegExChars && char.match(/[|()?+[\]\\]+/))
+            {
                 newRegEx += `${char}`;
                 continue;
             }
@@ -23,13 +28,15 @@ async function generate(res, pattern, exactMatch, equalChars, whitespaceLimit) {
         }
     }
 
-    if (!whitespaceLimit) {
+    if (!whitespaceLimit)
+    {
         newRegEx = newRegEx.replace(/ /g, "^\\s");
     }
 
     let finalRegEx = `\\b(${newRegEx})\\b`;
 
-    if (exactMatch) {
+    if (exactMatch)
+    {
         finalRegEx = `^(${newRegEx})$`;
     }
 

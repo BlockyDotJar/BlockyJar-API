@@ -4,15 +4,18 @@ const TwitchJs = require("twitch-js").default;
  * General Twitch utility functions
  */
 
-const getAPIClient = (token, clientId) => {
+const getAPIClient = (token, clientId) =>
+{
     return new TwitchJs({ token, clientId }).api;
-}
+};
 
-const getAPI = (req, res) => {
+const getAPI = (req, res) =>
+{
     const token = req.get("Authorization");
     const clientId = req.get("Client-Id");
 
-    if (!token || !clientId) {
+    if (!token || !clientId)
+    {
         return res.status(401).jsonp
         (
             {
@@ -26,11 +29,13 @@ const getAPI = (req, res) => {
     const accessToken = authParts ? authParts[1] : token;
 
     return getAPIClient(accessToken, clientId);
-}
+};
 
-const getUsers = (res, api) => {
+const getUsers = (res, api) =>
+{
     return api.get("users")
-        .then(response => {
+        .then(response =>
+        {
             const data = response.data;
             const user = data[0];
             const userID = Number(user.id);
@@ -41,7 +46,8 @@ const getUsers = (res, api) => {
                         "userLogin": userLogin
                    };
         })
-        .catch(err => {
+        .catch(err =>
+        {
             const errorMessage = err.message;
 
             return res.status(400).jsonp
@@ -52,11 +58,13 @@ const getUsers = (res, api) => {
                 }
             );
         });
-}
+};
 
-const getUsersByID = (res, api, userID) => {
+const getUsersByID = (res, api, userID) =>
+{
     return api.get(`users?id=${userID}`)
-        .then(response => {
+        .then(response =>
+        {
             const data = response.data;
             const user = data[0];
             const userID = Number(user.id);
@@ -67,7 +75,8 @@ const getUsersByID = (res, api, userID) => {
                         "userLogin": userLogin
                    };
         })
-        .catch(err => {
+        .catch(err =>
+        {
             const errorMessage = err.message;
 
             return res.status(400).jsonp
@@ -78,13 +87,14 @@ const getUsersByID = (res, api, userID) => {
                 }
             );
         });
-}
+};
 
 /*
  * Export modules
  */
 
-module.exports = {
+module.exports =
+{
     getAPI: getAPI,
     getUsers: getUsers,
     getUsersByID: getUsersByID

@@ -5,17 +5,20 @@ const { getUsers } = require("../twitch");
  * PATCH /v1/apujar/internal/user/:user_id
  */
 
-async function patchUser(res, api, id, login) {
+async function patchUser(res, api, id, login)
+{
     const { userID } = await getUsers(res, api);
     const connection = await mysql.createDatabaseConnection();
 
     patchUserResponse(res, connection, id, login, userID);
 }
 
-async function patchUserResponse(res, connection, id, login, userID) {
+async function patchUserResponse(res, connection, id, login, userID)
+{
     const hasAdminPerms = await mysql.isAdmin(res, connection, userID);
 
-    if (!hasAdminPerms) {
+    if (!hasAdminPerms)
+    {
         return res.status(403).jsonp
         (
             {
@@ -27,9 +30,10 @@ async function patchUserResponse(res, connection, id, login, userID) {
 
     const dbTables = [ "admins", "bible" ];
 
-    for (const table of dbTables) {
+    for (const table of dbTables)
+    {
         const query = `UPDATE \`${table}\` SET \`userLogin\` = ? WHERE \`userID\` = ?`;
-        const values = [login, id];
+        const values = [ login, id ];
     
         await mysql.requestDatabase(connection, query, values, res);
     }
@@ -47,6 +51,4 @@ async function patchUserResponse(res, connection, id, login, userID) {
  * Export modules
  */
 
-module.exports = {
-    patchUser: patchUser
-};
+module.exports.patchUser = patchUser;

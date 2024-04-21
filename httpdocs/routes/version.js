@@ -1,5 +1,7 @@
-module.exports.setup = (app) => {
-	app.get("/v1", (_, res) => {
+async function setup(app)
+{
+	app.get("/v1", (_, res) =>
+	{
 		return res.jsonp
 		(
 			{
@@ -12,3 +14,9 @@ module.exports.setup = (app) => {
 		);
 	});
 }
+
+/*
+ * Export modules
+ */
+
+module.exports.setup = setup;

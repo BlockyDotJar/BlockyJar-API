@@ -50,7 +50,7 @@ const validateParameter = (req, paramID, paramType, res) =>
     return true;
 };
 
-const validateParameters = (req, res) =>
+const validateParameters = (req, paramID, firstType, secondType, res) =>
 {
     const valResult = validationResult(req);
 
@@ -59,7 +59,7 @@ const validateParameters = (req, res) =>
         const errors = valResult.array().map(error =>
         {
             const path = error.path;
-            const type = path === "limit" ? "number" : "boolean";
+            const type = path === paramID ? firstType : secondType;
 
             return `query.${path} is not of a type(s) ${type}.`
         });

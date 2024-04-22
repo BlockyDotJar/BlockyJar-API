@@ -1,4 +1,4 @@
-const { createLink, deleteLink } = require("../../utils/responses/links");
+const { createLink, deleteLink } = require("../../responses/links");
 
 const { param } = require("express-validator");
 const { validate, validateParameter } = require("../../utils/validator");

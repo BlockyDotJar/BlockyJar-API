@@ -1,4 +1,4 @@
-const { generate } = require("../../utils/responses/regex");
+const { generate } = require("../../responses/regex");
 
 const { validate } = require("../../utils/validator");
 

@@ -3,7 +3,7 @@ const { getAPI } = require("../../../utils/twitch");
 const { param } = require("express-validator");
 const { validate, validateParameter } = require("../../../utils/validator");
 
-const responses = require("../../../utils/responses/owners");
+const responses = require("../../../responses/owners");
 
 const schema = require("../../../resources/schema/owners/POST.json");
 

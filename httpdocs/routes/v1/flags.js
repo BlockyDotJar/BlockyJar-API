@@ -1,4 +1,4 @@
-const { checkFlags } = require("../../utils/responses/flags");
+const { checkFlags } = require("../../responses/flags");
 
 const { validate } = require("../../utils/validator");
 

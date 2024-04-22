@@ -3,7 +3,7 @@ const { getAPI } = require("../../../utils/twitch");
 const { param, query } = require("express-validator");
 const { validate, validateParameter, validateParameters } = require("../../../utils/validator");
 
-const responses = require("../../../utils/responses/bible");
+const responses = require("../../../responses/bible");
 
 const postSchema = require("../../../resources/schema/bible/POST.json");
 const patchSchema = require("../../../resources/schema/bible/PATCH.json");
@@ -15,7 +15,7 @@ async function setup(app)
 		.get(query("limit").optional().isInt(), query("random").optional().isBoolean(), (req, res) =>
 		{
 			const query = req.query;
-			const valid = validateParameters(req, res);
+			const valid = validateParameters(req, "limit", "number", "boolean", res);
 
 			if (!valid)
 			{

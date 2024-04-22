@@ -8,7 +8,7 @@ const cors = require("cors");
 const fs = require("fs")
 const yaml = require("yaml");
 
-const version = require("./routes/version");
+const base = require("./routes/base");
 const regex = require("./routes/v1/regex");
 const flags = require("./routes/v1/flags");
 const links = require("./routes/v1/links");
@@ -32,7 +32,7 @@ app.use((err, _req, res, _next) =>
     );
 });
 
-version.setup(app);
+base.setup(app);
 regex.setup(app);
 flags.setup(app);
 links.setup(app);

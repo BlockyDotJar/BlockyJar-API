@@ -1,5 +1,5 @@
-const mysql = require("../mysql");
-const { getUsers } = require("../twitch");
+const mysql = require("../utils/mysql");
+const { getUsers } = require("../utils/twitch");
 
 /*
  * GET /v1/apujar/owners/:owner_id

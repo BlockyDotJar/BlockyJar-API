@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: BlockyJar API
   version: 1.0.0
-  description: API Endpoints for some parts of the <a href="https://blockyjar.dev">blockyjar.dev</a> website.
+  description: API Endpoints for some parts of the <a href="https://blockyjar.dev">blockyjar.dev</a> website and for the ApuJar Twitch chatbot.
   contact:
     name: Dominic R.
     url: https://twitch.tv/BlockyDotJar
@@ -15,6 +15,8 @@ servers:
 tags:
   - name: base
     description: The base of the API.
+  - name: ApuJar
+    description: Some API endpoints for the ApuJar Twitch chatbot.
 paths:
   /:
     get:
@@ -23,13 +25,304 @@ paths:
       summary: Get information about the current API version!
       description: Get some information about the current version of this API.
       responses:
-        '200':
+        200:
            description: Successful operation.
            content:
-             application/json:
-               schema:
-                 $ref: '#/components/schemas/Version'
-        '500':
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Version'
+        500:
+          description: Internal server error.
+  /flags:
+    post:
+      tags:
+        - base
+      summary: <TODO>
+      description: <TODO>
+      requestBody:
+        description: <TODO>
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                flags:
+                  type: integer
+                  format: int32
+                  example: 33
+                flag_items:
+                  type: array
+                  items:
+                    type: object
+                  example: [
+                    {
+                      "flag": 2,
+                      "name": "flag1"
+                    },
+                    {
+                      "flag": 4,
+                      "name": "flag2"
+                    }
+                  ]
+      responses:
+        200:
+            description: Successful operation.
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/Flags'
+        400:
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    format: int32
+                    example: 400
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    example: [
+                      "instance requires property \"flags\".",
+                      "instance.flags is not of a type(s) number.",
+                      "instance requires property \"flag_items\".",
+                      "instance.flag_items does not meet minimum length of 1.",
+                      "instance.flag_items[i] is not of a type(s) object.",
+                      "instance.flag_items[i] requires property \"flag\".",
+                      "instance.flag_items[i].flag is not of a type(s) number.",
+                      "instance.flag_items[i].name is not of a type(s) string."
+                    ]
+        422:
+          description: Unprocessable Entity.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    format: int32
+                    example: 422
+                  message:
+                    type: string
+                    example: <error> in JSON at position <number> (line <number> column <number>)
+        500:
+          description: Internal server error.
+  /links:
+    post:
+      tags:
+        - base
+      summary: <TODO>
+      description: <TODO>
+      requestBody:
+        description: <TODO>
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                link:
+                  type: uri
+                  example: https://github.com/
+                expires_on:
+                  type: date
+                  example: 2024-04-2024
+      responses:
+        200:
+            description: Successful operation.
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/Link-Creation'
+        400:
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    format: int32
+                    example: 400
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    example: [
+                      "instance requires property \"link\".",
+                      "instance.link is not of a type(s) uri.",
+                      "instance.expires_on is not of a type(s) date."
+                    ]
+        422:
+          description: Unprocessable Entity.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    format: int32
+                    example: 422
+                  message:
+                    type: string
+        500:
+          description: Internal server error.
+  /links/{link_uuid}:
+    delete:
+      parameters:
+        - in: path
+          name: link_uuid
+          schema:
+            type: uuid
+          required: true
+          description: <TODO>
+      tags:
+        - base
+      summary: <TODO>
+      description: <TODO>
+      responses:
+        200:
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Link-Deletion'
+        400:
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    format: int32
+                    example: 400
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    example: [
+                      "param.link_uuid is not of a type(s) uuid."
+                    ]
+        404:
+          description: Not found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    format: int32
+                    example: 404
+                  message:
+                    type: string
+                    example: No link for uuid '9460108a-dddb-4b1f-844a-d7729ac75d0f' found.
+        422:
+          description: Unprocessable Entity.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    format: int32
+                    example: 422
+                  message:
+                    type: string
+        500:
+          description: Internal server error.
+  /regex:
+    post:
+      tags:
+        - base
+      summary: Generate a RegEx from an string intput.
+      description: Generate a RegEx from an string intput, with many custom settings. (Mainly made for moderation purposes)
+      requestBody:
+        description: <TODO>
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                pattern:
+                  type: array
+                  items:
+                    type: string
+                  example: [ "Hello World!" ]
+                exact_match:
+                  type: boolean
+                  example: false
+                equal_chars:
+                  type: boolean
+                  example: false
+                whitespace_limit:
+                  type: boolean
+                  example: false
+                match_regex_chars:
+                  type: boolean
+                  example: false
+      responses:
+        200:
+            description: Successful operation.
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/RegEx'
+        400:
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    format: int32
+                    example: 400
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    example: [
+                      "instance requires property \"pattern\".",
+                      "instance.pattern does not meet minimum length of 1.",
+                      "instance.pattern[i] is not of a type(s) string.",
+                      "instance requires property \"exact_match\".",
+                      "instance.exact_match is not of a type(s) boolean.",
+                      "instance requires property \"equal_chars\".",
+                      "instance.equal_chars is not of a type(s) boolean.",
+                      "instance requires property \"whitespace_limit\".",
+                      "instance.whitespace_limit is not of a type(s) boolean.",
+                      "instance requires property \"match_regex_chars\".",
+                      "instance.match_regex_chars is not of a type(s) boolean."
+                    ]
+        422:
+          description: Unprocessable Entity.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    format: int32
+                    example: 422
+                  message:
+                    type: string
+                    example: <error> in JSON at position <number> (line <number> column <number>)
+        500:
           description: Internal server error.
 components:
   schemas:
@@ -52,3 +345,68 @@ components:
         docs_url:
           type: string
           example: https://api.blockyjar.dev/v1/docs/
+    Flags:
+      type: object
+      properties:
+        status:
+          type: integer
+          format: int32
+          example: 200
+        flags:
+          type: array
+          items:
+            type: object
+          example: [
+            {
+              "flag": 2,
+              "name": "flag1",
+              "is_present": false
+            },
+            {
+              "flag": 4,
+              "name": "flag2",
+              "is_present": false
+            }
+          ]
+    Link-Creation:
+      type: object
+      properties:
+        status:
+          type: integer
+          format: int32
+          example: 200
+        id:
+          type: string
+          example: SCCVf9XX6jF
+        uuid:
+          type: uuid
+          example: 9460108a-dddb-4b1f-844a-d7729ac75d0f
+        expires_on:
+          type: date
+          example: 2024-04-23
+        link:
+          type: uri
+          example: https://links.blockyjar.dev/SCCVf9XX6jF
+        redirect_to:
+          type: uri
+          example: https://github.com/
+    Link-Deletion:
+      type: object
+      properties:
+        status:
+          type: integer
+          format: int32
+          example: 200
+        message:
+          type: string
+          example: Successfully deleted link with uuid 9460108a-dddb-4b1f-844a-d7729ac75d0f.
+    RegEx:
+      type: object
+      properties:
+        status:
+          type: integer
+          format: int32
+          example: 200
+        regex:
+          type: string
+          example: (?:^|\W)(Hello[^\s]+World!)(?:\W|$)

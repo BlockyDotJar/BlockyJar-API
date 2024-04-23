@@ -3,7 +3,7 @@ const base58 = require("bs58");
 
 const { DateTime } = require("dateutils");
 
-const mysql = require("../mysql");
+const mysql = require("../utils/mysql");
 
 /*
  * Utility functions

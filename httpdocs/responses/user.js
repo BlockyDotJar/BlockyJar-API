@@ -1,5 +1,5 @@
-const mysql = require("../mysql");
-const { getUsers } = require("../twitch");
+const mysql = require("../utils/mysql");
+const { getUsers } = require("../utils/twitch");
 
 /*
  * PATCH /v1/apujar/internal/user/:user_id

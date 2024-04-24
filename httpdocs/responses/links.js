@@ -48,6 +48,20 @@ async function createLink(res, link, expiresOn)
     const [ id, uuid ] = await getID(res);
     const expires = expiresOn || expireDate;
 
+    const now = Date.now();
+    const expiresDate = Date.parse(expires);
+
+    if (now > expiresDate)
+    {
+        return res.status(400).jsonp
+        (
+            {
+                "status": 400,
+                "message": "JSON object 'expires_on' must be in the future."
+            }
+        );
+    }
+
     const connection = await mysql.createDatabaseConnection();
 
     const query = "INSERT INTO `links`(`id`, `uuid`, `link`, `expiresOn`) VALUES(?, ?, ?, ?)";
@@ -62,18 +76,20 @@ async function createLink(res, link, expiresOn)
             "id": id,
             "uuid": uuid,
             "expires_on": expires,
-            "link": `https://links.blockyjar.dev/${id}`
+            "link": `https://links.blockyjar.dev/${id}`,
+            "redirect_to": link
         }
     );
 }
 
 /*
- * DELETE /v1/links/:link_uuid
+ * GET /v1/links/:link_uuid
  */
-async function deleteLink(res, linkUUID) 
+
+async function getLink(res, uuid)
 {
     const connection = await mysql.createDatabaseConnection();
-    const validUUID = await mysql.isValidUUID(res, connection, linkUUID);
+    const validUUID = await mysql.isValidUUID(res, connection, uuid);
 
     if (!validUUID)
     {
@@ -81,13 +97,56 @@ async function deleteLink(res, linkUUID)
         (
             {
                 "status": 404,
-                "message": `No link for uuid '${linkUUID}' found.`
+                "message": `No link for uuid '${uuid}' found.`
+            }
+        );
+    }
+
+    const links = await mysql.getAllLinks(res, connection);
+
+    const link = links.find(link =>
+    {
+        const linkUUID = link.uuid;
+        return linkUUID === uuid;
+    });
+
+    const id = link.id;
+    const expiresOn = link.expiresOn;
+    const redirectTo = link.link;
+
+    return res.status(200).jsonp
+    (
+        {
+            "status": 200,
+            "id": id,
+            "expires_on": expiresOn,
+            "link": `https://links.blockyjar.dev/${id}`,
+            "redirect_to": redirectTo
+        }
+    );
+}
+
+/*
+ * DELETE /v1/links/:link_uuid
+ */
+async function deleteLink(res, uuid) 
+{
+    const connection = await mysql.createDatabaseConnection();
+    const validUUID = await mysql.isValidUUID(res, connection, uuid);
+
+    if (!validUUID)
+    {
+        return res.status(404).jsonp
+        (
+            {
+                "status": 404,
+                "message": `No link for uuid '${uuid}' found.`
             }
         );
     }
 
     const query = "DELETE FROM `links` WHERE `uuid` = ?";
-    const values = [ linkUUID ];
+    const values = [ uuid ];
 
     await mysql.requestDatabase(connection, query, values, res);
 
@@ -95,7 +154,94 @@ async function deleteLink(res, linkUUID)
     (
         {
             "status": 200,
-            "message": `Successfully deleted link with uuid ${linkUUID}.`
+            "message": `Successfully deleted link with uuid '${uuid}'.`
+        }
+    );
+}
+
+/*
+ * PATCH /v1/links/:link_uuid
+ */
+
+async function patchLink(res, uuid, link, expiresOn) 
+{
+    const connection = await mysql.createDatabaseConnection();
+    const links = await mysql.getAllLinks(res, connection);
+
+    const uuidLink = links.find(link =>
+    {
+        const linkUUID = link.uuid;
+        return linkUUID === uuid;
+    });
+
+    if (!uuidLink)
+    {
+        return res.status(404).jsonp
+        (
+            {
+                "status": 404,
+                "message": `No link for uuid '${uuid}' found.`
+            }
+        );
+    }
+
+    if (link && uuidLink === link)
+    {
+        return res.status(409).jsonp
+        (
+            {
+                "status": 409,
+                "message": "The new link matches exactly with the old one."
+            }
+        );
+    }
+
+    const uuidExpiresOnRaw = uuidLink.expiresOn;
+    const uuidExpiresOn = DateTime.fromDateObject(uuidExpiresOnRaw);
+
+    if (expiresOn && uuidExpiresOn === expiresOn)
+    {
+        return res.status(409).jsonp
+        (
+            {
+                "status": 409,
+                "message": "The new expiration date matches exactly with the old one."
+            }
+        );
+    }
+
+    const expires = expiresOn || uuidExpiresOn.toISODateString();
+
+    const now = Date.now();
+    const expiresDate = Date.parse(expires);
+
+    if (now > expiresDate)
+    {
+        return res.status(400).jsonp
+        (
+            {
+                "status": 400,
+                "message": "JSON object 'expires_on' must be in the future."
+            }
+        );
+    }
+
+    const query = "UPDATE `links` SET `link` = ?, `expiresOn` = ? WHERE `uuid` = ?";
+    const values = [ link, String(expires), uuid ];
+
+    await mysql.requestDatabase(connection, query, values, res);
+
+    const id = uuidLink.id;
+
+    return res.status(200).jsonp
+    (
+        {
+            "status": 200,
+            "id": id,
+            "uuid": uuid,
+            "expires_on": expires,
+            "link": `https://links.blockyjar.dev/${id}`,
+            "redirect_to": link
         }
     );
 }
@@ -107,5 +253,7 @@ async function deleteLink(res, linkUUID)
 module.exports =
 {
     createLink: createLink,
-    deleteLink: deleteLink
+    getLink: getLink,
+    deleteLink: deleteLink,
+    patchLink: patchLink
 }

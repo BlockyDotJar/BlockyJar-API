@@ -1,0 +1,19 @@
+{
+    "type": "object",
+    "properties": {
+      "link": { "type": "string", "format": "uri" },
+      "expires_on": { "type": "string", "format": "date" }
+    },
+    "anyOf": [
+        {
+            "required": [
+                "link"
+            ]
+        },
+        {
+            "required": [
+                "expires_on"
+            ]
+        }
+    ]
+}

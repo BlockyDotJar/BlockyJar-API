@@ -30,7 +30,7 @@ async function setup(app)
             return;
         }
 
-        const userLogin = params.user_login;
+        const userLogin = body.user_login;
         const api = getAPI(req, res);
 
         responses.patchUser(res, api, userID, userLogin);

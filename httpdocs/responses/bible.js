@@ -51,6 +51,7 @@ async function getBibleEntryResponse(res, connection, biblePage, userID)
     const page = row.page;
     const entry = row.entry;
     const addedAt = row.added_at;
+    const updatedAt = row.updated_at;
     const id = row.userID;
     const login = row.userLogin;
 
@@ -60,11 +61,12 @@ async function getBibleEntryResponse(res, connection, biblePage, userID)
             "status": 200,
             "page": page,
             "entry": entry,
-            "added_at": addedAt,
             "user": {
                 "id": id,
                 "login": login
-            }
+            },
+            "added_at": addedAt,
+            "updated_at": updatedAt
         }
     );
 }
@@ -119,17 +121,19 @@ async function getBibleEntriesResponse(res, connection, limit, random, userID)
         const biblePage = entry.page;
         const bibleEntry = entry.entry;
         const addedAt = entry.added_at;
+        const updatedAt = entry.updated_at;
         const id = entry.userID;
         const login = entry.userLogin;
 
         return {
                     "page": biblePage,
                     "entry": bibleEntry,
-                    "added_at": addedAt,
                     "user": {
                         "id": id,
                         "login": login
-                    }
+                    },
+                    "added_at": addedAt,
+                    "updated_at": updatedAt
                };
     });
 
@@ -146,16 +150,16 @@ async function getBibleEntriesResponse(res, connection, limit, random, userID)
  * POST /v1/apujar/bible
  */
 
-async function postBibleEntry(res, api, bibleEntry, bibleUserID)
+async function postBibleEntry(res, api, bibleEntry, addedAt, updatedAt, bibleUserID)
 {
     const { userID } = await getUsers(res, api);
     const { userLogin } = await getUsersByID(res, api, bibleUserID);
     const connection = await mysql.createDatabaseConnection();
 
-    postBibleEntryResponse(res, connection, bibleEntry, bibleUserID, userID, userLogin);
+    postBibleEntryResponse(res, connection, bibleEntry, addedAt, updatedAt, bibleUserID, userID, userLogin);
 }
 
-async function postBibleEntryResponse(res, connection, bibleEntry, bibleUserID, userID, userLogin)
+async function postBibleEntryResponse(res, connection, bibleEntry, addedAtRaw, updatedAtRaw, bibleUserID, userID, userLogin)
 {
     const hasAdminPerms = await mysql.isAdmin(res, connection, userID);
 
@@ -190,11 +194,36 @@ async function postBibleEntryResponse(res, connection, bibleEntry, bibleUserID, 
     }
 
     const date = new Date();
-    const page = bibleEntries.length + 1;
-    const addedAt = date.toISOString();
+    const isoDate = date.toISOString();
 
-    const query = "INSERT INTO `bible`(`page`, `entry`, `addedAt`, `userID`, `userLogin`) VALUES(?, ?, ?, ?, ?)";
-    const values = [ page, bibleEntry, addedAt, bibleUserID, userLogin ];
+    const page = bibleEntries.length + 1;
+    const addedAt = !addedAtRaw ? isoDate : addedAtRaw;
+    const updatedAt = !updatedAtRaw ? isoDate : updatedAtRaw;
+
+    if (addedAt > isoDate || updatedAt > isoDate)
+    {
+        return res.status(400).jsonp
+        (
+            {
+                "status": 400,
+                "message": "Either or both of the 'added_at' or the 'updated_at' values are in the future."
+            }
+        );
+    }
+
+    if (addedAt > updatedAt)
+    {
+        return res.status(400).jsonp
+        (
+            {
+                "status": 400,
+                "message": "The 'updated_at' value lies in the past compared to the 'added_at' value."
+            }
+        );
+    }
+
+    const query = "INSERT INTO `bible`(`page`, `entry`, `addedAt`, `updatedAt`, `userID`, `userLogin`) VALUES(?, ?, ?, ?, ?, ?)";
+    const values = [ page, bibleEntry, addedAt, updatedAt, bibleUserID, userLogin ];
 
     await mysql.requestDatabase(connection, query, values, res);
 
@@ -315,8 +344,11 @@ async function patchBibleEntryResponse(res, connection, biblePage, bibleEntry, u
         );
     }
 
-    const query = "UPDATE `bible` SET `entry` = ? WHERE `page` = ?";
-    const values = [ bibleEntry, biblePage ];
+    const date = new Date();
+    const updatedAt = date.toISOString();
+
+    const query = "UPDATE `bible` SET `entry` = ?, `updatedAt` = ? WHERE `page` = ?";
+    const values = [ bibleEntry, updatedAt, biblePage ];
 
     await mysql.requestDatabase(connection, query, values, res);
 

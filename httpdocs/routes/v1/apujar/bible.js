@@ -42,10 +42,12 @@ async function setup(app)
 
 			const userID = Number(body.user_id);
 			const entry = body.entry;
+			const addedAt = body.added_at;
+			const updatedAt = body.updated_at;
 
             const api = getAPI(req, res);
 
-			responses.postBibleEntry(res, api, entry, userID);
+			responses.postBibleEntry(res, api, entry, addedAt, updatedAt, userID);
 		});
 
 	app.route("/v1/apujar/bible/:bible_page", param("bible_page").isInt())

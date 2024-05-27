@@ -50,8 +50,8 @@ async function getBibleEntryResponse(res, connection, biblePage, userID)
     const row = bibleEntries[biblePage - 1];
     const page = row.page;
     const entry = row.entry;
-    const addedAt = row.added_at;
-    const updatedAt = row.updated_at;
+    const addedAt = row.addedAt;
+    const updatedAt = row.updatedAt;
     const id = row.userID;
     const login = row.userLogin;
 
@@ -120,8 +120,8 @@ async function getBibleEntriesResponse(res, connection, limit, random, userID)
     {
         const biblePage = entry.page;
         const bibleEntry = entry.entry;
-        const addedAt = entry.added_at;
-        const updatedAt = entry.updated_at;
+        const addedAt = entry.addedAt;
+        const updatedAt = entry.updatedAt;
         const id = entry.userID;
         const login = entry.userLogin;
 
@@ -366,7 +366,7 @@ async function patchBibleEntryResponse(res, connection, biblePage, bibleEntry, u
     const page = entry.page;
     const id = row.userID;
     const login = row.userLogin;
-    const addedAt = row.addedAt
+    const addedAt = row.addedAt;
 
     const date = new Date();
     const updatedAt = date.toISOString();

@@ -50,7 +50,7 @@ async function getAdminResponse(res, connection, userID, adminID)
     const id = admin.userID;
     const login = admin.userLogin;
 
-    return res.jsonp
+    return res.status(200).jsonp
     (
         {
             "status": 200,
@@ -102,7 +102,7 @@ async function getAdminsResponse(res, connection, userID)
                };
     });
 
-    return res.jsonp
+    return res.status(200).jsonp
     (
         {
             "status": 200,

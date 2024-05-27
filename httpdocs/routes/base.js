@@ -2,7 +2,7 @@ async function setup(app)
 {
 	app.get("/v1", (_, res) =>
 	{
-		return res.jsonp
+		return res.status(200).jsonp
 		(
 			{
 				"status": 200,

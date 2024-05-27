@@ -55,7 +55,7 @@ async function getBibleEntryResponse(res, connection, biblePage, userID)
     const id = row.userID;
     const login = row.userLogin;
 
-    return res.jsonp
+    return res.status(200).jsonp
     (
         {
             "status": 200,
@@ -137,7 +137,7 @@ async function getBibleEntriesResponse(res, connection, limit, random, userID)
                };
     });
 
-    return res.jsonp
+    return res.status(200).jsonp
     (
         {
             "status": 200,
@@ -227,7 +227,20 @@ async function postBibleEntryResponse(res, connection, bibleEntry, addedAtRaw, u
 
     await mysql.requestDatabase(connection, query, values, res);
 
-    getBibleEntriesResponse(res, connection, null, false, userID);
+    return res.status(200).jsonp
+    (
+        {
+            "status": 200,
+            "page": page,
+            "entry": bibleEntry,
+            "user": {
+                "id": bibleUserID,
+                "login": userLogin
+            },
+            "added_at": addedAt,
+            "updated_at": updatedAt
+        }
+    );
 }
 
 /*
@@ -281,7 +294,13 @@ async function deleteBibleEntryResponse(res, connection, biblePage, userID)
 
     await mysql.requestDatabase(connection, query, values, res);
 
-    getBibleEntriesResponse(res, connection, null, false, userID);
+    return res.status(200).jsonp
+    (
+        {
+            "status": 200,
+            "message": `Successfully deleted bible entry page ${biblePage}.`
+        }
+    );
 }
 
 /*
@@ -344,6 +363,11 @@ async function patchBibleEntryResponse(res, connection, biblePage, bibleEntry, u
         );
     }
 
+    const page = entry.page;
+    const id = row.userID;
+    const login = row.userLogin;
+    const addedAt = row.addedAt
+
     const date = new Date();
     const updatedAt = date.toISOString();
 
@@ -352,7 +376,20 @@ async function patchBibleEntryResponse(res, connection, biblePage, bibleEntry, u
 
     await mysql.requestDatabase(connection, query, values, res);
 
-    getBibleEntriesResponse(res, connection, null, false, userID);
+    return res.status(200).jsonp
+    (
+        {
+            "status": 200,
+            "page": page,
+            "entry": entry,
+            "user": {
+                "id": id,
+                "login": login
+            },
+            "added_at": addedAt,
+            "updated_at": updatedAt
+        }
+    );
 }
 
 /*

@@ -50,7 +50,7 @@ async function getOwnerResponse(res, connection, userID, ownerID)
     const id = owner.userID;
     const login = owner.userLogin;
 
-    return res.jsonp
+    return res.status(200).jsonp
     (
         {
             "status": 200,
@@ -102,7 +102,7 @@ async function getOwnersResponse(res, connection, userID)
                };
     });
 
-    return res.jsonp
+    return res.status(200).jsonp
     (
         {
             "status": 200,

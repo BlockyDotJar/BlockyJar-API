@@ -1,8 +1,0 @@
-{
-    "type": "object",
-    "properties": {
-      "user_id": { "type": "number" },
-      "user_login": { "type": "string" }
-    },
-    "required": [ "user_id", "user_login" ]
-}

@@ -1,7 +1,0 @@
-{
-    "type": "object",
-    "properties": {
-      "user_login": { "type": "string" }
-    },
-    "required": [ "user_login" ]
-}

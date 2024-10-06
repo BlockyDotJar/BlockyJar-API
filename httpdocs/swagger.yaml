@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: BlockyJar API
   version: 1.0.0
-  description: API Endpoints for some parts of the <a href="https://blockyjar.dev">blockyjar.dev</a> website and for the ApuJar Twitch chatbot.
+  description: API Endpoints for some parts of the <a href="https://blockyjar.dev">blockyjar.dev</a> website.
   contact:
     name: Dominic R.
     url: https://twitch.tv/BlockyDotJar
@@ -15,8 +15,6 @@ servers:
 tags:
   - name: base
     description: The base of the API.
-  - name: ApuJar
-    description: Some API endpoints for the ApuJar Twitch chatbot.
 paths:
   /:
     get:

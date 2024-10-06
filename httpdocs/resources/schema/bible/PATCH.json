@@ -1,7 +1,0 @@
-{
-    "type": "object",
-    "properties": {
-      "entry": { "type": "string" }
-    },
-    "required": [ "entry" ]
-}

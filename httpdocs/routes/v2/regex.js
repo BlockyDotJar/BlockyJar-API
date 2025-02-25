@@ -6,7 +6,7 @@ const schema = require("../../resources/schema/regex/POST.json");
 
 async function setup(app)
 {
-    app.post("/v1/regex", (req, res) =>
+    app.post("/v2/regex", (req, res) =>
     {
         const body = req.body;
         const valid = validate(body, schema, res);

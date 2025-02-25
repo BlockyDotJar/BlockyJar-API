@@ -9,28 +9,23 @@ const fs = require("fs")
 const yaml = require("yaml");
 
 const base = require("./routes/base");
-const regex = require("./routes/v1/regex");
-const flags = require("./routes/v1/flags");
-const links = require("./routes/v1/links");
+const regex = require("./routes/v2/regex");
+const links = require("./routes/v2/links");
+
+const { UNPROCESSABLE_ENTITY } = require("./utils/responses");
 
 app.use(express.json());
 app.use(cors());
 
 // eslint-disable-next-line no-unused-vars
-app.use((err, _req, res, _next) =>
+app.use((error, _req, res, _next) =>
 {
-    return res.status(422).json
-    (
-        {
-            "status": 422,
-            "message": err.message
-        }
-    );
+    const response = UNPROCESSABLE_ENTITY(error);
+    return res.status(422).jsonp(response);
 });
 
 base.setup(app);
 regex.setup(app);
-flags.setup(app);
 links.setup(app);
 
 const file = fs.readFileSync("./httpdocs/swagger.yaml", "UTF8");
@@ -38,7 +33,7 @@ const swaggerDocument = yaml.parse(file);
 
 app.use
 (
-    "/v1/docs", 
+    "/v2/docs", 
     swaggerUi.serve, 
     swaggerUi.setup(swaggerDocument)
 );

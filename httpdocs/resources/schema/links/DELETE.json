@@ -1,0 +1,7 @@
+{
+    "type": "object",
+    "properties": {
+      "delete_details": { "type": "boolean" },
+      "additional_information": { "type": "boolean" }
+    }
+}

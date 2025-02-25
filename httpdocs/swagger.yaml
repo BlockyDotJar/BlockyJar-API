@@ -11,7 +11,7 @@ info:
     name: GPL-3.0
     url: https://www.gnu.org/licenses/gpl-3.0.en.html
 servers:
-  - url: https://api.blockyjar.dev/v1/
+  - url: https://api.blockyjar.dev/v2/
 tags:
   - name: base
     description: The base of the API.
@@ -29,86 +29,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Version'
-        500:
-          description: Internal server error.
-  /flags:
-    post:
-      tags:
-        - base
-      summary: <TODO>
-      description: <TODO>
-      requestBody:
-        description: <TODO>
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                flags:
-                  type: integer
-                  format: int32
-                  example: 33
-                flag_items:
-                  type: array
-                  items:
-                    type: object
-                  example: [
-                    {
-                      "flag": 2,
-                      "name": "flag1"
-                    },
-                    {
-                      "flag": 4,
-                      "name": "flag2"
-                    }
-                  ]
-      responses:
-        200:
-            description: Successful operation.
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/Flags'
-        400:
-          description: Bad request.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: integer
-                    format: int32
-                    example: 400
-                  errors:
-                    type: array
-                    items:
-                      type: string
-                    example: [
-                      "instance requires property \"flags\".",
-                      "instance.flags is not of a type(s) number.",
-                      "instance requires property \"flag_items\".",
-                      "instance.flag_items does not meet minimum length of 1.",
-                      "instance.flag_items[i] is not of a type(s) object.",
-                      "instance.flag_items[i] requires property \"flag\".",
-                      "instance.flag_items[i].flag is not of a type(s) number.",
-                      "instance.flag_items[i].name is not of a type(s) string."
-                    ]
-        422:
-          description: Unprocessable Entity.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: integer
-                    format: int32
-                    example: 422
-                  message:
-                    type: string
-                    example: <error> in JSON at position <number> (line <number> column <number>)
         500:
           description: Internal server error.
   /links:
@@ -336,36 +256,13 @@ components:
           example: Hello World!
         version:
           type: string
-          example: v1
+          example: v2
         base_url:
           type: string
-          example: https://api.blockyjar.dev/v1
+          example: https://api.blockyjar.dev/v2
         docs_url:
           type: string
-          example: https://api.blockyjar.dev/v1/docs/
-    Flags:
-      type: object
-      properties:
-        status:
-          type: integer
-          format: int32
-          example: 200
-        flags:
-          type: array
-          items:
-            type: object
-          example: [
-            {
-              "flag": 2,
-              "name": "flag1",
-              "is_present": false
-            },
-            {
-              "flag": 4,
-              "name": "flag2",
-              "is_present": false
-            }
-          ]
+          example: https://api.blockyjar.dev/v2/docs/
     Link-Creation:
       type: object
       properties:
@@ -384,7 +281,7 @@ components:
           example: 2024-04-23
         link:
           type: uri
-          example: https://links.blockyjar.dev/SCCVf9XX6jF
+          example: https://blcky.link/SCCVf9XX6jF
         redirect_to:
           type: uri
           example: https://github.com/

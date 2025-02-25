@@ -1,11 +1,17 @@
 const replacements = require("../resources/replacements.json");
+const { REGEX_GENERATOR_SUCCESS, REGEX_GENERATOR_MISSING_PATTERN } = require("../utils/responses");
 
 /*
- * POST /v1/regex
+ * POST /v2/regex
  */
 
 async function generate(res, pattern, exactMatch, equalChars, whitespaceLimit, matchRegExChars)
 {
+    if (pattern.length === 1 && !pattern[0])
+    {
+        return res.status(400).jsonp(REGEX_GENERATOR_MISSING_PATTERN);
+    }
+
     const regEx = pattern.join("|");
 
     let newRegEx = regEx;
@@ -22,7 +28,7 @@ async function generate(res, pattern, exactMatch, equalChars, whitespaceLimit, m
                 continue;
             }
 
-            if (matchRegExChars && char.match(/[|()?+[\]\\]+/))
+            if (matchRegExChars && char.match(/[|()?+\[\]\\]+/))
             {
                 newRegEx += `${char}`;
                 continue;
@@ -43,7 +49,7 @@ async function generate(res, pattern, exactMatch, equalChars, whitespaceLimit, m
         newRegEx = newRegEx.replace(/\s+/g, "[^\\s]+");
     }
 
-    let finalRegEx = `\b(${newRegEx})\b`;
+    let finalRegEx = `\\b(${newRegEx})\\b`;
 
     if (exactMatch)
     {
@@ -60,13 +66,9 @@ async function generate(res, pattern, exactMatch, equalChars, whitespaceLimit, m
         finalRegEx = `(?:^|\\W)(${newRegEx})(?:\\W|$)`;
     }
 
-    return res.status(200).jsonp
-    (
-        {
-            "status": 200,
-            "regex": finalRegEx
-        }
-    );
+    const response = REGEX_GENERATOR_SUCCESS(finalRegEx);
+
+    return res.status(200).jsonp(response);
 }
 
 /*

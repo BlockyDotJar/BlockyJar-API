@@ -1,6 +1,14 @@
 const { validationResult } = require("express-validator");
 const { Validator } = require("jsonschema");
 
+const {
+
+    VALIDATOR_ERRORS_BAD_REQUEST,
+    VALIDATOR_TYPE_SAFETY_ERRORS_BAD_REQUEST,
+    VALIDATOR_MULTIPLE_TYPE_SAFETY_ERRORS_BAD_REQUEST
+
+} = require("../utils/responses");
+
 const validate = (body, schema, res) =>
 {
     const validator = new Validator();
@@ -16,13 +24,8 @@ const validate = (body, schema, res) =>
             return `${property} ${message}.`;
         });
 
-        res.status(400).jsonp
-        (
-            {
-                "status": 400,
-                "errors": errors
-            }
-        );
+        const response = VALIDATOR_ERRORS_BAD_REQUEST(errors);
+        res.status(400).jsonp(response);
 
         return false;
     }
@@ -36,13 +39,8 @@ const validateParameter = (req, paramID, paramType, res) =>
 
     if (!valResult.isEmpty())
     {
-        res.status(400).jsonp
-        (
-            {
-                "status": 400,
-                "errors": [ `param.${paramID} is not of a type(s) ${paramType}.` ]
-            }
-        );
+        const response = VALIDATOR_TYPE_SAFETY_ERRORS_BAD_REQUEST(paramID, paramType);
+        res.status(400).jsonp(response);
 
         return false;
     }
@@ -50,27 +48,15 @@ const validateParameter = (req, paramID, paramType, res) =>
     return true;
 };
 
-const validateParameters = (req, paramID, firstType, secondType, res) =>
+const validateMultipleParameter = (req, res) =>
 {
     const valResult = validationResult(req);
 
     if (!valResult.isEmpty())
     {
-        const errors = valResult.array().map(error =>
-        {
-            const path = error.path;
-            const type = path === paramID ? firstType : secondType;
-
-            return `query.${path} is not of a type(s) ${type}.`
-        });
-
-        res.status(400).jsonp
-        (
-            {
-                "status": 400,
-                "errors": errors
-            }
-        );
+        const paths = valResult.array().map(error => `param.${error.path} is not of needed type(s).`);
+        const response = VALIDATOR_MULTIPLE_TYPE_SAFETY_ERRORS_BAD_REQUEST(paths);
+        res.status(400).jsonp(response);
 
         return false;
     }
@@ -86,5 +72,5 @@ module.exports =
 {
     validate: validate,
     validateParameter: validateParameter,
-    validateParameters: validateParameters
+    validateMultipleParameter: validateMultipleParameter
 };

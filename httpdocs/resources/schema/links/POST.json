@@ -2,7 +2,8 @@
     "type": "object",
     "properties": {
       "link": { "type": "string", "format": "uri" },
-      "expires_on": { "type": "string", "format": "date" }
+      "expires_on": { "type": "string", "format": "date" },
+      "delete_expired_details": { "type": "boolean" }
     },
     "required": [ "link" ]
 }

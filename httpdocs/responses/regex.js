@@ -7,12 +7,13 @@ const { REGEX_GENERATOR_SUCCESS, REGEX_GENERATOR_MISSING_PATTERN } = require("..
 
 async function generate(res, pattern, exactMatch, equalChars, whitespaceLimit, matchRegExChars)
 {
-    if (pattern.length === 1 && !pattern[0])
+    if (pattern.length === 1 && !pattern[0].trim())
     {
         return res.status(400).jsonp(REGEX_GENERATOR_MISSING_PATTERN);
     }
 
-    const regEx = pattern.join("|");
+    const cleanedPattern = pattern.filter(pat => pat && pat.trim());
+    const regEx = cleanedPattern.join("|");
 
     let newRegEx = regEx;
 
@@ -56,7 +57,7 @@ async function generate(res, pattern, exactMatch, equalChars, whitespaceLimit, m
         finalRegEx = `^(${newRegEx})$`;
     }
 
-    const specialCharacters = pattern.some(pat =>
+    const specialCharacters = cleanedPattern.some(pat =>
     {
         return !pat.match(/^\w+$/);
     });

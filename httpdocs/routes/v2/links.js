@@ -12,14 +12,10 @@ const deleteDetailsSchema = require("../../resources/schema/link-details/DELETE.
 async function setup(app)
 {
     app.route("/v2/links")
-        .get([
-                query("link_id").isString(),
-                query("additional_information").optional().isBoolean()
-             ], (req, res) =>
+        .get(query("link_id").isString(), (req, res) =>
         {
             const query = req.query;
             const linkID = query.link_id;
-            const additionalInformation = query.additional_information;
 
             const valid = validator.validateMultipleParameter(req, res);
 
@@ -28,7 +24,7 @@ async function setup(app)
                 return;
             }
 
-            links.getLink(res, linkID, null, additionalInformation);
+            links.getLink(res, linkID, null, false);
         })
     
         .post((req, res) =>

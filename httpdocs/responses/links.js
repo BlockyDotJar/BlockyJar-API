@@ -133,19 +133,17 @@ async function getLink(res, linkID, uuid, additionalInformation)
 
     let additionalDetails;
 
-    if (additionalInformation === "true")
+    if (additionalInformation === "true" && uuid)
     {
-        const linkUUID = uuid || link.uuid;
-
-        const linkImpressions = await mysql.getLinkImpressions(res, connection, linkUUID)
+        const linkImpressions = await mysql.getLinkImpressions(res, connection, uuid)
         const linkDetails = linkImpressions.details;
         const details = JSON.parse(linkDetails);
 
-        const linkDateHistory = await mysql.getLinkDateHistory(res, connection, linkUUID);
+        const linkDateHistory = await mysql.getLinkDateHistory(res, connection, uuid);
         const linkDateH = linkDateHistory.history;
         const dateHistory = JSON.parse(linkDateH);
 
-        const linkURLHistory = await mysql.getLinkURLHistory(res, connection, linkUUID);
+        const linkURLHistory = await mysql.getLinkURLHistory(res, connection, uuid);
         const linkURLH = linkURLHistory.history;
         const urlHistory = JSON.parse(linkURLH);
 

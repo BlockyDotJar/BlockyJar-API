@@ -144,6 +144,12 @@ const UNPROCESSABLE_ENTITY = (error) =>
     "message": error.message
 });
 
+const RATELIMIT_REACHED =
+{
+    "status": 429,
+    "message": "Too many requests - Rate limit exceeded. You can only make 5 requests per second to this endpoint."
+};
+
 /*
  * Export modules
  */
@@ -170,5 +176,6 @@ module.exports =
     LINK_URL_CONFLICT,
     LINK_EXPIRATION_DATE_CONFLICT,
     LINK_DELETE_EXPIRED_DETAILS_CONFLICT,
-    UNPROCESSABLE_ENTITY
+    UNPROCESSABLE_ENTITY,
+    RATELIMIT_REACHED
 };

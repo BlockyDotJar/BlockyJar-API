@@ -335,7 +335,7 @@ async function patchLink(res, uuid, link, expiresOn, deleteExpiredDetails)
 
     await mysql.updateLink(res, connection, uuid, urlExpiresOn, urlLink, urlDeleteExpiredDetails);
 
-    let history;
+    let lnkHistory, dtHistory;
 
     if (link)
     {
@@ -344,7 +344,7 @@ async function patchLink(res, uuid, link, expiresOn, deleteExpiredDetails)
 
         const linkHistory = JSON.parse(linkHistoryRaw);
         const originLink = linkHistory.origin_link;
-        history = linkHistory.history;
+        const history = linkHistory.history;
 
         const date = new Date();
         const dateISO = date.toISOString();
@@ -355,6 +355,8 @@ async function patchLink(res, uuid, link, expiresOn, deleteExpiredDetails)
             "old_link": uuidURLLink,
             "new_link": link
         });
+
+        lnkHistory = history;
 
         const details = JSON.stringify
         ({
@@ -372,7 +374,7 @@ async function patchLink(res, uuid, link, expiresOn, deleteExpiredDetails)
 
         const dateHistory = JSON.parse(dateHistoryRaw);
         const originDate = dateHistory.origin_date;
-        history = dateHistory.history;
+        const history = dateHistory.history;
 
         const date = new Date();
         const dateISO = date.toISOString();
@@ -383,6 +385,8 @@ async function patchLink(res, uuid, link, expiresOn, deleteExpiredDetails)
             "old_date": uuidExpiresOn,
             "new_date": expiresOn
         });
+
+        dtHistory = history;
 
         const details = JSON.stringify
         ({
@@ -397,7 +401,7 @@ async function patchLink(res, uuid, link, expiresOn, deleteExpiredDetails)
 
     const id = uuidLink.id;
 
-    const response = responses.LINK_PATCH_SUCCESS(id, uuid, urlExpiresOn, urlDeleteExpiredDetails, urlLink, history);
+    const response = responses.LINK_PATCH_SUCCESS(id, uuid, urlExpiresOn, urlDeleteExpiredDetails, urlLink, lnkHistory, dtHistory);
 
     return res.status(200).jsonp(response);
 }

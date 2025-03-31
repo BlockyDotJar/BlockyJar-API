@@ -8,15 +8,15 @@
     "express-rate-limit": "^7.5.0",
     "express-validator": "^7.2.1",
     "jsonschema": "^1.5.0",
-    "mysql2": "^3.12.0",
+    "mysql2": "^3.14.0",
     "swagger-ui-express": "^5.0.1",
     "uuid": "^11.1.0",
-    "yaml": "^2.7.0"
+    "yaml": "^2.7.1"
   },
   "scripts": {
     "api": "node httpdocs/index.js"
   },
   "devDependencies": {
-    "eslint": "^9.21.0"
+    "eslint": "^9.23.0"
   }
 }

@@ -49,7 +49,7 @@ const LINK_DELETE_DETAILS_SUCCESS = (uuid, linkDetails) =>
     "link_details": linkDetails
 });
 
-const LINK_PATCH_SUCCESS = (id, uuid, expiresOn, deleteExpiredDetails, redirectTo) =>
+const LINK_PATCH_SUCCESS = (id, uuid, expiresOn, deleteExpiredDetails, redirectTo, history) =>
 ({
     "status": 200,
     "id": id,
@@ -57,7 +57,8 @@ const LINK_PATCH_SUCCESS = (id, uuid, expiresOn, deleteExpiredDetails, redirectT
     "expires_on": expiresOn,
     "delete_expired_details": deleteExpiredDetails,
     "link": `https://blcky.link/${id}`,
-    "redirect_to": redirectTo
+    "redirect_to": redirectTo,
+    "history": history
 });
 
 const VALIDATOR_ERRORS_BAD_REQUEST = (errors) =>

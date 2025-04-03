@@ -211,7 +211,6 @@ async function deleteLink(res, uuid, deleteDetails, additionalInformation)
             "delete_expired_details": deleteExpiredDetails,
             "link": `https://blcky.link/${id}`,
             "redirect_to": redirectTo,
-            "delete_expired_details": deleteExpiredDetails,
             "impression_details": details,
             "date_history": dateHistory,
             "url_history": urlHistory
